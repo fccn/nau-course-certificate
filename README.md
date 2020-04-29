@@ -9,6 +9,8 @@ python -m pip install -r requirements.txt --upgrade
 
 ## Development
 
+Change the certificate template on openedx LMS on https://lms.dev.nau.fccn.pt/admin/certificates/certificatetemplate/2/change/ with content [lms_certificate_template.html](lms_certificate_template.html).
+
 Run development server as:
 
 ```bash
