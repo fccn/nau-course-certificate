@@ -1,0 +1,1 @@
+from .course_certificate_to_pdf import CourseCertificateToPDF;

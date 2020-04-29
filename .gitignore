@@ -1,0 +1,6 @@
+out.pdf
+__pycache__
+venv/
+.project
+.pydevproject
+.settings
