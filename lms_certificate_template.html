@@ -1,0 +1,275 @@
+<%! from django.utils.translation import ugettext as _ %>
+<%! from django.utils.translation import activate%>
+<%
+  activate(user_language)
+%>
+<%namespace name='static' file='/static_content.html'/>
+<%
+# set doc language direction
+from django.utils.translation import get_language_bidi
+dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
+course_mode_class = course_mode if course_mode else ''
+%>
+<!DOCTYPE html>
+<html class="no-js" lang="${user_language}">
+<head dir="${dir_rtl}">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
+
+  <!-- meta for pdf printing -->
+  <meta name="pdfkit-page-size" content="A4">
+  <meta name="pdfkit-orientation" content="Landscape">
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${document_title}</title>
+  <%static:css group='style-certificates'/>
+  <link rel="stylesheet" type="text/css" href="${static.certificate_asset_url('certificates-styles')}">
+  <style>
+
+@page {
+  size: A4;
+  margin: 10mm 10mm 10mm 10mm;
+}
+
+@media all {
+
+.ednxt-certificate__footer-information {
+    position: absolute;
+    left: 0cm;
+    bottom: 0.8cm;    
+    z-index: 1;
+}
+
+.ednxt-certificate__footer-link {
+    position: absolute;
+    right: 0.5cm;
+    bottom: 0.5cm;
+    z-index: 1;
+}
+
+    .linkedin-button {
+      margin-top: 24px;
+      margin-bottom: 0;
+    }
+
+   .edxnt-certificate {
+    display: block;
+    position: relative;
+   }
+
+   .ednxt-certificate__content {
+      top: 0em;
+      position: relative;
+     z-index: 1;
+   }
+
+   .certificate-background {
+      position: absolute;
+      top: 0cm;
+      left: 0cm;
+      width: 29cm;
+      height: 21cm;
+      z-index: 0;
+   }
+   .ednxt-certificate {
+      min-height: 21cm;
+      max-height: 21cm;
+      min-width: 29cm;
+      max-width: 29cm;
+   }
+
+   .nau-logo {
+     max-height: 70px;
+     position: absolute;
+     right: 0.7cm;
+     top: 0cm;
+   }
+
+   .cert-footer-rp {
+      height: 4em;
+      position: absolute;
+      bottom: 2em;
+     }
+
+   .cert-footer-rp img {
+     height: 100%;
+   }
+
+.cert-left {
+    position: absolute;
+    top: 8cm;
+    left: 11cm;
+    width: 17cm;
+    text-align: justify;
+    z-index: 1;
+}
+
+.cert-right {
+    width: 7cm;
+    float: right;
+    position: absolute;
+    right: 2em;
+    top: 10cm;
+    font-size: 8pt;
+    line-height: 10pt;
+  z-index: 1;
+}
+
+.ednxt-certificate__header-title {
+    font-weight: bold;
+    position: absolute;
+    top: 2cm;
+    left: 11cm;
+    width: 17cm;
+    text-align: center;
+  z-index: 1;
+}
+
+.cert-text {
+    font-size: 1.2em;
+    line-height: 1.5em;
+   }
+
+p.cert-text.name {
+    font-weight: bold;
+    text-align: center;
+    font-size: 2em;
+}
+
+ul {
+    margin-left: 0;
+}
+
+li {
+        padding-left: 20px !important;
+	list-style: none;
+	background-repeat: no-repeat;
+	background-size: 1em;
+   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA5CAMAAABUBBiJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQAAABERESMjIzQ0NEdHR1dXV2lpaXp6eomJiZiYmKenp7W1tcPDw9DQ0N3d3ezs7P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABPYQtoAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNWRHWFIAAAF8SURBVEhL7ZTbsoMgDEWDttZLq/7/155AdhARufTtzHS9lDhdRsMW2r/kJ2b4B+I6TO63VZwM0WYXbeL6IDIft2wSZ27Xu35N4jYQ0QNeg/jp2RtQNIgLP2bgVYsza6FXK9rXO3mVovOeKIQacbNj8fsAKsSkVyGKZ1aUSlGEJzkLKIni0YzyoCDCe6EMKIhuH6KNEPKieF00UEdWHJ13HYwlJ7p8pgZjyYgf8U4JPbgXN/sdXROjHOI6GBqCf8lGUPIFGS/a84RPBlT7/nIayVmYQEUZPNGIepHyuFEMRNyfkTCv8oKXaB9AHOWPjAyRz0/L4ook+qgIJWObTLJMRU3xw/Emt1xllXnQQNTXsi3xoLcTtRyiJoxGLHpcTxOI2qhD6zcupwnFtwjgJqNKKGpLR3YyzElEXBwaoTtO4t7B4oY3H4XnLOpgyw0jEd9gRcNI1LCbTEhBJErYnsV+F9F+9yZ9OkXE4kx9YQNBLG6FwHhisZqfeMu+/wENQbEvRyBuQAAAAABJRU5ErkJggg==');
+}
+
+.ednxt-certificate__footer-signatory {
+
+}
+
+.ednxt-certificate__footer-signatories {
+    position: absolute;
+    top: 12cm;
+    left: 10cm;
+    text-align: center;
+    width: 19cm;
+    z-index: 1;
+}
+
+}
+  </style>
+  <%static:optional_include_mako file="cert-head-extra.html" is_theming_enabled="True" />
+</head>
+  <body>
+% if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
+      ## redirect strategy
+      ##<script>window.location.href = window.location.href.replace("//lms.", "//certificate.");</script>
+
+      ## iframe strategy
+      ##<iframe src="//${request.META.get('HTTP_HOST')}:${request.META.get('SERVER_PORT')}${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
+      <iframe src="http://localhost:8080/${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
+
+      </iframe>
+% else:
+
+  <div class="layout-accomplishment view-valid-accomplishment ${dir_rtl} certificate certificate-${course_mode_class} ednxt-certificate__container" data-view="valid-accomplishment">
+   <div style="height: 1.2em;"></div>
+    <div class="wrapper-view" dir="${dir_rtl}">
+    <p></p>
+      <hr class="divider sr-only">
+      % if user.is_authenticated() and user.id == int(accomplishment_user_id):
+        <%include file="/certificates/_accomplishment-banner.html" />
+        <div class="wrapper-banner wrapper-banner-user">
+          <section class="banner banner-user">
+            <div class="message message-block message-notice">
+              <div class="wrapper-copy-and-actions">
+                <div class="message-actions">
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      % endif
+
+      <div class="ednxt-container">
+        <div class="ednxt-certificate">
+          
+
+
+          <div class="ednxt-certificate__header">
+            <div class="ednxt-certificate__header-logo" style="width: 100%;">                
+            </div>
+          </div>
+      <h1 class="ednxt-certificate__header-title">${document_title}</h1>
+          <div class="cert-left">
+      <p class="cert-text">Certifica-se que <span class="cert-text name">${accomplishment_copy_name | h}</span> participou no curso de Higiene das Mãos na Prevenção de Infeções, com uma duração de 3 horas.
+      </p>
+<p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
+              </div>
+             <div class="cert-right">
+           </div>
+          <div class="signatures">
+
+            <div class="ednxt-certificate__footer-signatures">
+              % if mode != 'base':
+                <h3 class="sr-only">${_("Noted by")}</h3>
+                <div class="ednxt-certificate__footer-signatories">
+                  % if certificate_data:
+                    % for signatory in certificate_data.get('signatories', []):
+                      % if signatory['name'] <> "":
+                    <div class="ednxt-certificate__footer-signatory">
+                       <span class="role">${signatory['title']}</span>
+                       % if signatory['signature_image_path'] <> "":
+                         <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
+                       % endif
+                      <p class="ednxt-certificate__footer-signatory_credentials">
+                        <span class="signatory">(${signatory['name']})</span>
+                      </p>
+                    </div>
+                      % endif
+                    % endfor
+                  % endif
+                </div>
+              % endif
+            </div>
+
+          </div>
+          <div class="ednxt-certificate__footer">
+<img class="certificate-background" src="${static.certificate_asset_url('certificado-ctc')}">
+<img class="nau-logo" src="${certificate_logo_large if certificate_logo_large else logo_src}" alt="${certificate_logo_large_alt if certificate_logo_large_alt else platform_name}">
+            <div class="ednxt-certificate__footer-information">
+              <div class="ednxt-certificate__footer-information_logo">
+                <h3 class="sr-only">${_("Supported by the following organizations")}</h3>
+              </div>
+              <div class="ednxt-certificate__footer-information_date">
+                <span class="title">${certificate_date_issued_title}</span>
+                <span class="value">${certificate_date_issued}</span>
+              </div>
+              <div class="ednxt-certificate__footer-information_id">
+                <span class="title">${certificate_id_number_title}${certificate_id_number_separator if certificate_id_number_separator else ':'}</span>
+                <span class="value"><a href="/certificates/${certificate_id_number}">${certificate_id_number}</a></span>
+              </div>
+            </div>
+            <div class="ednxt-certificate__footer-link">
+              <a href="https://lms.nau.edu.pt/certificates/${certificate_id_number}">https://lms.nau.edu.pt/certificates/${certificate_id_number}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wrapper-about">
+      </div>
+
+    </div>
+
+    <%include file="/certificates/_assets-secondary.html" />
+  </div>
+% endif
+  </body>
+</html>
