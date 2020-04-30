@@ -5,14 +5,15 @@ Class that converts and URL to a certificate to a PDF
 '''
 class CourseCertificateToPDF:
 
-    #def __init__(self, config):
+    def __init__(self, config):
+        self._config = config
 
     def convert(self, url):
         '''
         Receives and URL and returns the binary PDF.
         '''
-        http_header_name = 'X-NAU-Certificate-force-html'
-        http_header_value = 'true'
+        http_header_name = self._config['HTTP_HEADER_NAME']
+        http_header_value = self._config['HTTP_HEADER_VALUE']
 
         pdf = pdfkit.from_url(url, False, options={
             'custom-header' : [

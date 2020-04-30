@@ -4,3 +4,5 @@ venv/
 .project
 .pydevproject
 .settings
+config.cfg
+**/*.pyc
