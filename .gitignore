@@ -6,3 +6,4 @@ venv/
 .settings
 config.cfg
 **/*.pyc
+#**/*.cpython-36.pyc
