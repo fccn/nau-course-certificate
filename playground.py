@@ -1,6 +1,6 @@
 # Playground script
 #
-from nau.course.certificate import CourseCertificateToPDF
+from nau.course.certificate.course_certificate_to_pdf import CourseCertificateToPDF
 import configparser
 
 config_parser = configparser.ConfigParser()
