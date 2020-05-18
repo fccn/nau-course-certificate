@@ -275,8 +275,20 @@ li {
 
     </div>
 
-    <%include file="/certificates/_assets-secondary.html" />
+    <div class="wrapper-about">
+      <aside role="complementary" class="about" aria-label="About">
+        <%include file="/certificates/_about-edx.html" />
+        <%include file="/certificates/_about-accomplishments.html" />
+      </aside>
+    </div>
+
+    <hr class="divider sr-only">
   </div>
+
+    <%include file="/certificates/_assets-secondary.html" />
+    %if badge:
+      <%include file="/certificates/_badges-modal.html" />
+    %endif
   </body>
 </html>
 % endif
