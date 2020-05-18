@@ -10,6 +10,26 @@ from django.utils.translation import get_language_bidi
 dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
 %>
+
+% if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
+      ## redirect strategy
+      ##<script>window.location.href = window.location.href.replace("//lms.", "//certificate.");</script>
+
+      ## iframe strategy
+      ##<iframe src="//${request.META.get('HTTP_HOST')}:${request.META.get('SERVER_PORT')}${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
+
+  <html>
+    <body>
+      <%
+        mode = 'landscape'
+      %>
+
+      <iframe src="http://localhost:8080/${request.META.get('RAW_URI')}&mode=${mode}" style="width: 100%; height: 100%">
+      </iframe>
+    </body>
+  </html>
+% else:
+
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
 <head dir="${dir_rtl}">
@@ -20,6 +40,7 @@ course_mode_class = course_mode if course_mode else ''
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
 
+  <meta name="nau-course-certificate-version" content="v_2020_05_08">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${document_title}</title>
@@ -167,16 +188,6 @@ li {
   <%static:optional_include_mako file="cert-head-extra.html" is_theming_enabled="True" />
 </head>
   <body>
-% if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
-      ## redirect strategy
-      ##<script>window.location.href = window.location.href.replace("//lms.", "//certificate.");</script>
-
-      ## iframe strategy
-      ##<iframe src="//${request.META.get('HTTP_HOST')}:${request.META.get('SERVER_PORT')}${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
-      <iframe src="http://localhost:8080/${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
-
-      </iframe>
-% else:
 
   <div class="layout-accomplishment view-valid-accomplishment ${dir_rtl} certificate certificate-${course_mode_class} ednxt-certificate__container" data-view="valid-accomplishment">
    <div style="height: 1.2em;"></div>
@@ -270,6 +281,6 @@ li {
 
     <%include file="/certificates/_assets-secondary.html" />
   </div>
-% endif
   </body>
 </html>
+% endif
