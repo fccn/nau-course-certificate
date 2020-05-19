@@ -11,21 +11,6 @@ dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
 %>
 
-% if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
-      ## redirect strategy
-      ##<script>window.location.href = window.location.href.replace("//lms.", "//certificate.");</script>
-
-      ## iframe strategy
-      ##<iframe src="//${request.META.get('HTTP_HOST')}:${request.META.get('SERVER_PORT')}${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
-
-  <html>
-    <body>
-      <iframe src="http://localhost:5000/inline${request.META.get('RAW_URI')}" style="width: 100%; height: 100%">
-      </iframe>
-    </body>
-  </html>
-% else:
-
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
 <head dir="${dir_rtl}">
@@ -160,9 +145,9 @@ ul {
 
 li {
         padding-left: 20px !important;
-	list-style: none;
-	background-repeat: no-repeat;
-	background-size: 1em;
+  list-style: none;
+  background-repeat: no-repeat;
+  background-size: 1em;
    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA5CAMAAABUBBiJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQAAABERESMjIzQ0NEdHR1dXV2lpaXp6eomJiZiYmKenp7W1tcPDw9DQ0N3d3ezs7P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABPYQtoAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNWRHWFIAAAF8SURBVEhL7ZTbsoMgDEWDttZLq/7/155AdhARufTtzHS9lDhdRsMW2r/kJ2b4B+I6TO63VZwM0WYXbeL6IDIft2wSZ27Xu35N4jYQ0QNeg/jp2RtQNIgLP2bgVYsza6FXK9rXO3mVovOeKIQacbNj8fsAKsSkVyGKZ1aUSlGEJzkLKIni0YzyoCDCe6EMKIhuH6KNEPKieF00UEdWHJ13HYwlJ7p8pgZjyYgf8U4JPbgXN/sdXROjHOI6GBqCf8lGUPIFGS/a84RPBlT7/nIayVmYQEUZPNGIepHyuFEMRNyfkTCv8oKXaB9AHOWPjAyRz0/L4ook+qgIJWObTLJMRU3xw/Emt1xllXnQQNTXsi3xoLcTtRyiJoxGLHpcTxOI2qhD6zcupwnFtwjgJqNKKGpLR3YyzElEXBwaoTtO4t7B4oY3H4XnLOpgyw0jEd9gRcNI1LCbTEhBJErYnsV+F9F+9yZ9OkXE4kx9YQNBLG6FwHhisZqfeMu+/wENQbEvRyBuQAAAAABJRU5ErkJggg==');
 }
 
@@ -203,6 +188,13 @@ li {
           </section>
         </div>
       % endif
+
+      % if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
+
+        ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','certificate') }
+        <iframe id="certificateToPdfIframe" src="http://localhost:5000/inline${request.META.get('RAW_URI')}" style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;"> </iframe>
+
+    % else:
 
       <div class="ednxt-container">
         <div class="ednxt-certificate">
@@ -269,6 +261,7 @@ li {
           </div>
         </div>
       </div>
+      % endif
 
       <div class="wrapper-about">
       </div>
@@ -285,10 +278,19 @@ li {
     <hr class="divider sr-only">
   </div>
 
-    <%include file="/certificates/_assets-secondary.html" />
+	## Remove this template or replace it on nau_themes
+    ##<%include file="/certificates/_assets-secondary.html" />
+    <script type="text/javascript">
+	    document.getElementById("action-print-view").addEventListener("click", printView);
+	    function printView(event) {
+	    	// Replace http://localhost:5000 with //${ request.get_host().replace('lms','certificate') }
+	       window.location.assign("http://localhost:5000/attachment${request.META.get('RAW_URI')}");
+	    }
+	</script>
+
+
     %if badge:
       <%include file="/certificates/_badges-modal.html" />
     %endif
   </body>
 </html>
-% endif
