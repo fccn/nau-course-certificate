@@ -1,3 +1,4 @@
+.git
 out.pdf
 __pycache__
 venv/
@@ -6,3 +7,6 @@ venv/
 .settings
 **/*.pyc
 config.yml
+docker-compose.yml
+Dockerfile
+lms_certificate_template.html

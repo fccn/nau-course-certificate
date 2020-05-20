@@ -25,10 +25,10 @@ uwsgi uwsgi.ini
 
 Build image
 ```bash
-docker build -t nau-course-certificate:latest .
+docker-compose build
 ```
 
 Run
 ```bash
-docker run -p 5000:5000 nau-course-certificate
+docker-compose up
 ```
