@@ -50,7 +50,7 @@ class CourseCertificateToPDF:
         '''
         request_headers = { self.http_header_name() : self.http_header_value() }
         response = requests.get(url, headers=request_headers)
-        soup = BeautifulSoup(response.text)
+        soup = BeautifulSoup(response.text, features="html.parser")
 
         metas = soup.find_all('meta')
         pdfkit_metas = dict()
