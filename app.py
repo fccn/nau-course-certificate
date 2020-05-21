@@ -1,10 +1,10 @@
-from flask import (Flask, send_from_directory)
+from flask import Flask, request, send_from_directory
 from flask import make_response
 import os
 from nau.course.certificate.course_certificate_to_pdf import CourseCertificateToPDF
 from nau.course.certificate.configuration import Configuration
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 def convert_certificate_to_pdf(content_disposition, path):
     configuration = Configuration('config.yml')
@@ -31,9 +31,10 @@ def attachment(path):
     return convert_certificate_to_pdf("attachment", path)
 
 @app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
+@app.route('/robots.txt')
+@app.route('/sitemap.xml')
+def static_from_root():
+    return send_from_directory(app.static_folder, request.path[1:])
 
 # startup the Flask web server
 if __name__ == '__main__':
