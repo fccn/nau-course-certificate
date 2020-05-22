@@ -1,5 +1,9 @@
 HTTP_HEADER_NAME: X-NAU-Certificate-force-html
 HTTP_HEADER_VALUE: true
-LMS_SERVER_URL: https://lms.dev.nau.fccn.pt
+LMS_SERVER_URL: https://lms.ENV.nau.fccn.pt
 CERTIFICATE_FILE_NAME: certificate.pdf
 HTTP_HEADER_META_PREFIX: pdfkit-
+BUCKET_NAME: nau-ENV-certificates
+BUTCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
+BUTCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+BUTCKET_ENDPOINT_URL: http://rgw.nau.fccn.pt
