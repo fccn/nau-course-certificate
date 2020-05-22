@@ -3,7 +3,9 @@ HTTP_HEADER_VALUE: true
 LMS_SERVER_URL: https://lms.ENV.nau.fccn.pt
 CERTIFICATE_FILE_NAME: certificate.pdf
 HTTP_HEADER_META_PREFIX: pdfkit-
+HTTP_HEADER_META_VERSION_NAME: nau-course-certificate-version
 BUCKET_NAME: nau-ENV-certificates
-BUTCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
-BUTCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-BUTCKET_ENDPOINT_URL: http://rgw.nau.fccn.pt
+BUCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
+BUCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+BUCKET_ENDPOINT_URL: http://rgw.nau.fccn.pt
+BUCKET_CERTIFICATE_NO_VERSION_KEY: no-version
