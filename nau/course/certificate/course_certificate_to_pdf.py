@@ -39,7 +39,7 @@ class CourseCertificateToPDF:
         log.debug("Converting html certificate to PDF with URL: {}".format(self._url))
 
         certificate_version = self.get_certificate_http_meta_version_value()
-        s3_bucket_certificate_key = self._path + '/' + ( certificate_version if certificate_version else self.bucket_no_version())
+        s3_bucket_certificate_key = self._path + '/' + ( certificate_version if certificate_version else self.bucket_no_version()).replace(' ', '_')
         pdf = None
         if (self._certificate_id is not None):
             pdf = self.get_certificate_on_s3_bucket(self.bucket_name(), self.bucket_endpoint_url(), self.aws_access_key_id(), self.aws_secret_access_key(), s3_bucket_certificate_key)
