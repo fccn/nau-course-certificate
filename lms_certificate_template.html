@@ -21,7 +21,7 @@ course_mode_class = course_mode if course_mode else ''
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
 
-  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_05_08_certificate_date_${certificate_date_issued}">
+  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_05_26_2_certificate_date_${certificate_date_issued}">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${document_title}</title>
@@ -209,10 +209,12 @@ li {
           <div class="cert-left">
       <p class="cert-text">Certifica-se que <span class="cert-text name">${accomplishment_copy_name | h}</span> participou no curso de Higiene das Mãos na Prevenção de Infeções, com uma duração de 3 horas.
       </p>
-cccmd:${nau_certs_settings['interpolated_strings']['completion_statement']}
-cc_first_name: ${cc_first_name}
-cc_nic: ${cc_nic} ${cc_nic_check_digit}
-cc_last_name: ${cc_last_name}
+<%
+def title_case(in_str):
+  return ' '.join(w.title() if len(w) > 2 else w.lower() for w in in_str.split()) if in_str else None
+%>
+Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Cartão Cidadão número ${cc_nic} ${cc_nic_check_digit}.
+
 
 <p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
               </div>
