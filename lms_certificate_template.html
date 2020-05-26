@@ -11,6 +11,14 @@ dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
 %>
 
+% if cc_first_name is None:
+<html>
+<body>
+  Associe à sua <a target="_blank" href="/account/settings">conta</a> (no separador Contas Vinculadas) da NAU um <b>Cartão de Cidadão</b> para imprimir este certificado.
+</body>
+</html>
+% else:
+
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
 <head dir="${dir_rtl}">
@@ -21,7 +29,7 @@ course_mode_class = course_mode if course_mode else ''
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
 
-  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_05_26_2_certificate_date_${certificate_date_issued}">
+  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_05_26_4_certificate_date_${certificate_date_issued}">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${document_title}</title>
@@ -301,3 +309,5 @@ Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Ca
     %endif
   </body>
 </html>
+
+% endif
