@@ -1,5 +1,7 @@
 import yaml
-import logging as log
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Configuration:
 
@@ -7,7 +9,7 @@ class Configuration:
 		'''
 		Initialize a configuration object by receiving its file name.
 		'''
-		log.debug("Reading file {file}".format(file=configuration_file_name))
+		logger.debug("Reading file {file}".format(file=configuration_file_name))
 		with open(configuration_file_name, 'r') as config_data_stream:
 			self._config = yaml.safe_load(config_data_stream)
 

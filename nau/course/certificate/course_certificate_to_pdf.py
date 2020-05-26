@@ -1,11 +1,14 @@
+import logging
+import logging.config
 import requests
 import pdfkit
-import logging as log
 from bs4 import BeautifulSoup
 from builtins import dict, str
 import boto3
 from botocore.exceptions import ClientError
 from nau.course.certificate.configuration import Configuration
+
+logger = logging.getLogger(__name__)
 
 class CourseCertificateToPDF:
     '''
@@ -13,7 +16,6 @@ class CourseCertificateToPDF:
     On the 2nd request of that certificate returns the previous one.
     If the certificate template have been changed and also its HTTP meta version then a new PDF is generated.
     '''
-
     _config = None
     _path = None
     _url = None
@@ -22,6 +24,11 @@ class CourseCertificateToPDF:
 
     def __init__(self, config:Configuration, path:str):
         self._config = config
+
+        # https://www.digitalocean.com/community/tutorials/how-to-use-logging-in-python-3
+        # https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
+        logging.config.dictConfig(self._config.get('LOGGING'))
+
         self._path = path
         lms_server_url = self._config['LMS_SERVER_URL'] # https://lms.dev.nau.fccn.pt
         self._url = lms_server_url + '/' + path
@@ -36,7 +43,7 @@ class CourseCertificateToPDF:
         '''
         Receives and URL and returns the binary PDF.
         '''
-        log.debug("Converting html certificate to PDF with URL: {}".format(self._url))
+        logger.info("Converting html certificate to PDF with URL: {}".format(self._url))
 
         certificate_version = self.get_certificate_http_meta_version_value()
         s3_bucket_certificate_key = self._path + '/' + ( certificate_version if certificate_version else self.bucket_no_version()).replace(' ', '_')
@@ -67,7 +74,7 @@ class CourseCertificateToPDF:
 
         options = {**options_force_show_certificate_content, **options_extracted_on_http_metas}
 
-        log.info(options_extracted_on_http_metas)
+        logger.info(options_extracted_on_http_metas)
 
         pdf = pdfkit.from_url(self._url, False, options=options)
 
@@ -112,9 +119,9 @@ class CourseCertificateToPDF:
             return object_content
         except ClientError as e:
             if e.response['Error']['Code'] == "NoSuchKey":
-                log.info("NoSuchKey: {0}".format(e), exc_info=True)
+                logger.info("NoSuchKey: {0}".format(e), exc_info=True)
             else:
-                log.error("Received error: {0}".format(e), exc_info=True)
+                logger.error("Received error: {0}".format(e), exc_info=True)
             return None
 
     @staticmethod
