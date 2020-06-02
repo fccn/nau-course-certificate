@@ -59,6 +59,10 @@ class CourseCertificateToPDF:
 
         return pdf
 
+    def get_filename(self):
+        filename = self._get_certificate_http_meta_filename_value()
+        return filename if filename is not None else self._config['CERTIFICATE_FILE_NAME']
+
     def save_certificate(self, certificate_s3_key, pdf):
         self.save_certificate_on_s3_bucket(self.bucket_name(), self.bucket_endpoint_url(), self.aws_access_key_id(), self.aws_secret_access_key(), certificate_s3_key, pdf)
 
@@ -104,6 +108,9 @@ class CourseCertificateToPDF:
     def http_header_meta_version_name(self):
         return self._config['HTTP_HEADER_META_VERSION_NAME']
 
+    def http_header_meta_filename_name(self):
+        return self._config['HTTP_HEADER_META_FILENAME_NAME']
+
     def bucket_no_version(self):
         return self._config['BUCKET_CERTIFICATE_NO_VERSION_KEY']
 
@@ -135,6 +142,15 @@ class CourseCertificateToPDF:
         '''
         for meta in self._certificate_metas:
             if 'name' in meta.attrs and meta.attrs['name'] == self.http_header_meta_version_name():
+                return meta.attrs['content']
+        return None
+
+    def _get_certificate_http_meta_filename_value(self):
+        '''
+        Get the value of the certificate HTTP meta version.
+        '''
+        for meta in self._certificate_metas:
+            if 'name' in meta.attrs and meta.attrs['name'] == self.http_header_meta_filename_name():
                 return meta.attrs['content']
         return None
 

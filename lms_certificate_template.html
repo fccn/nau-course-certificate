@@ -11,13 +11,13 @@ dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
 %>
 
-% if cc_first_name is None:
-<html>
-<body>
-  Associe à sua <a target="_blank" href="/account/settings">conta</a> (no separador Contas Vinculadas) da NAU um <b>Cartão de Cidadão</b> para imprimir este certificado.
-</body>
-</html>
-% else:
+## % if cc_first_name is None:
+## <html>
+## <body>
+## Associe à sua <a target="_blank" href="/account/settings">conta</a> (no separador Contas Vinculadas) da NAU um <b>Cartão de Cidadão</b> para imprimir este certificado.
+## </body>
+## </html>
+## % else:
 
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
@@ -30,6 +30,7 @@ course_mode_class = course_mode if course_mode else ''
   <meta name="pdfkit-orientation" content="Landscape">
 
   <meta name="nau-course-certificate-version" content="certificate_template_version_2020_05_26_4_certificate_date_${certificate_date_issued}">
+  <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${document_title}</title>
@@ -293,16 +294,25 @@ Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Ca
     <hr class="divider sr-only">
   </div>
 
-	## Remove this template or replace it on nau_themes
-    ##<%include file="/certificates/_assets-secondary.html" />
+    <%include file="/certificates/_assets-secondary.html" />
+
     <script type="text/javascript">
-	    document.getElementById("action-print-view").addEventListener("click", printView);
+      ## // code adds a new button that prints a certificate
+      ## var printButton = document.getElementById("action-print-view");
+      ## var printButtonCloned = printButton.cloneNode(true);
+      ## printButton.parentElement.appendChild(printButtonCloned);
+      ## printButtonCloned.id = "action-print-view-2";
+      ## printButtonCloned.addEventListener("click", function(event){
+        ## window.location.assign("//${ request.get_host().replace('lms','course-certificate') }/attachment${request.META.get('RAW_URI')}");
+      ## });
+
+      // commented code that replace the browser print with a call to download certificate has PDF.
+      document.getElementById("action-print-view").addEventListener("click", printView);
 	    function printView(event) {
-	    	// Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
+	    // Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
 	       window.location.assign("//${ request.get_host().replace('lms','course-certificate') }/attachment${request.META.get('RAW_URI')}");
 	    }
 	</script>
-
 
     %if badge:
       <%include file="/certificates/_badges-modal.html" />
@@ -310,4 +320,4 @@ Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Ca
   </body>
 </html>
 
-% endif
+## % endif

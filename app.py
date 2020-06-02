@@ -9,9 +9,9 @@ def convert_certificate_to_pdf(content_disposition, path):
     configuration = Configuration('config.yml')
     config = configuration.config()
 
-    certificate_file_name = config['CERTIFICATE_FILE_NAME'] # certificate.pdf
-
-    binary_pdf = CourseCertificateToPDF(config, path).convert()
+    course_certificate_to_pdf = CourseCertificateToPDF(config, path)
+    certificate_file_name = course_certificate_to_pdf.get_filename()
+    binary_pdf = course_certificate_to_pdf.convert()
 
     response = make_response(binary_pdf)
     response.headers['Content-Type'] = 'application/pdf'
