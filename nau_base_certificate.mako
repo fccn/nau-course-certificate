@@ -19,7 +19,6 @@ course_mode_class = course_mode if course_mode else ''
   ## metas for pdf printing
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
-  ##<meta name="pdfkit-page-height" content="110mm">
   
   ## Fix put certificate on middle of the page
   <meta name="pdfkit-margin-left" content="0mm" />
