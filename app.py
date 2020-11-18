@@ -5,11 +5,11 @@ from nau.course.certificate.configuration import Configuration
 
 app = Flask(__name__, static_folder='static')
 
-def convert_certificate_to_pdf(content_disposition, path):
+def convert_certificate_to_pdf(content_disposition, path, query_string):
     configuration = Configuration('config.yml')
     config = configuration.config()
 
-    course_certificate_to_pdf = CourseCertificateToPDF(config, path)
+    course_certificate_to_pdf = CourseCertificateToPDF(config, path, query_string)
     certificate_file_name = course_certificate_to_pdf.get_filename()
     binary_pdf = course_certificate_to_pdf.convert()
 
@@ -20,11 +20,11 @@ def convert_certificate_to_pdf(content_disposition, path):
 
 @app.route('/inline/<path:path>')
 def inline(path):
-    return convert_certificate_to_pdf("inline", path)
+    return convert_certificate_to_pdf("inline", path, request.query_string)
 
 @app.route('/attachment/<path:path>')
 def attachment(path):
-    return convert_certificate_to_pdf("attachment", path)
+    return convert_certificate_to_pdf("attachment", path, request.query_string)
 
 @app.route('/favicon.ico')
 @app.route('/robots.txt')

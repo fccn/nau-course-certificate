@@ -5,6 +5,7 @@ CERTIFICATE_FILE_NAME: certificate.pdf
 HTTP_HEADER_META_PREFIX: pdfkit-
 HTTP_HEADER_META_VERSION_NAME: nau-course-certificate-version
 HTTP_HEADER_META_FILENAME_NAME: nau-course-certificate-filename
+HTTP_HEADER_META_LIMIT_NUMBER_PAGES: nau-course-certificate-limit-pages
 BUCKET_NAME: nau-ENV-certificates
 BUCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
 BUCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

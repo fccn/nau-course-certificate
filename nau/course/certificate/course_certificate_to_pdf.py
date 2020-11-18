@@ -7,6 +7,8 @@ from builtins import dict, str
 import boto3
 from botocore.exceptions import ClientError
 from nau.course.certificate.configuration import Configuration
+from nau.course.certificate.cut_pdf import cut_pdf_limit_pages
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +24,7 @@ class CourseCertificateToPDF:
     _certificate_id = None
     _certificate_metas = None
 
-    def __init__(self, config:Configuration, path:str):
+    def __init__(self, config:Configuration, path:str, query_string:str):
         self._config = config
 
         # https://www.digitalocean.com/community/tutorials/how-to-use-logging-in-python-3
@@ -30,14 +32,17 @@ class CourseCertificateToPDF:
         logging.config.dictConfig(self._config.get('LOGGING'))
 
         self._path = path
+        self._query_string = query_string
         lms_server_url = self._config['LMS_SERVER_URL'] # https://lms.dev.nau.fccn.pt
         self._url = lms_server_url + '/' + path
+        if query_string and len(query_string) > 0:
+            self._url += "?" + self._query_string.decode('ascii')
 
         certificates_prefix = 'certificates/'
         if (path.startswith(certificates_prefix)):
             self._certificate_id = path[len(certificates_prefix):len(path)]
 
-        self._certificate_metas = self.load_certificate_http_metas(self._url, self.http_header_name(), self.http_header_value())
+        self._certificate_metas = self.load_certificate_http_metas(self._url, self.http_header_name(), self.http_header_value(), self.lms_servers_auth_user(), self.lms_servers_auth_pass())
 
     def convert(self):
         '''
@@ -46,6 +51,7 @@ class CourseCertificateToPDF:
         logger.info("Converting html certificate to PDF with URL: {}".format(self._url))
 
         certificate_version = self.get_certificate_http_meta_version_value()
+        logger.info("certificate_version: {}".format(certificate_version))
         s3_bucket_certificate_key = self._path + '/' + ( certificate_version if certificate_version else self.bucket_no_version()).replace(' ', '_')
         pdf = None
         if (self._certificate_id is not None):
@@ -53,6 +59,10 @@ class CourseCertificateToPDF:
 
         if (pdf is None):
             pdf = self.generate_new_certificate_to_pdf()
+
+            limit_pages = self._get_certificate_http_meta_limit_number_pages()
+            if (limit_pages is not None):
+                pdf = cut_pdf_limit_pages(pdf, 0, int(limit_pages))
 
         if (self._certificate_id is not None):
             self.save_certificate(s3_bucket_certificate_key, pdf)
@@ -111,8 +121,17 @@ class CourseCertificateToPDF:
     def http_header_meta_filename_name(self):
         return self._config['HTTP_HEADER_META_FILENAME_NAME']
 
+    def http_header_meta_limit_number_pages(self):
+        return self._config.get('HTTP_HEADER_META_LIMIT_NUMBER_PAGES', None)
+
     def bucket_no_version(self):
         return self._config['BUCKET_CERTIFICATE_NO_VERSION_KEY']
+
+    def lms_servers_auth_user(self):
+        return self._config.get('LMS_SERVER_AUTH_USER', None)
+
+    def lms_servers_auth_pass(self):
+        return self._config.get('LMS_SERVER_AUTH_PASS', None)
 
     @staticmethod
     def get_certificate_on_s3_bucket(bucket_name:str, endpoint_url, aws_access_key_id, aws_secret_access_key, certificate_s3_key):
@@ -140,27 +159,41 @@ class CourseCertificateToPDF:
         '''
         Get the value of the certificate HTTP meta version.
         '''
-        for meta in self._certificate_metas:
-            if 'name' in meta.attrs and meta.attrs['name'] == self.http_header_meta_version_name():
-                return meta.attrs['content']
-        return None
+        return self._get_certificate_http_meta(self.http_header_meta_version_name())
 
     def _get_certificate_http_meta_filename_value(self):
         '''
         Get the value of the certificate HTTP meta version.
         '''
-        for meta in self._certificate_metas:
-            if 'name' in meta.attrs and meta.attrs['name'] == self.http_header_meta_filename_name():
-                return meta.attrs['content']
+        return self._get_certificate_http_meta(self.http_header_meta_filename_name())
+
+    def _get_certificate_http_meta_limit_number_pages(self):
+        '''
+        Get the value of the certificate HTTP meta limit number of pages.
+        '''
+        return self._get_certificate_http_meta(self.http_header_meta_limit_number_pages())
+
+    def _get_certificate_http_meta(self, metaName:str):
+        '''
+        Get the value of a meta HTTP header of the certificate.
+        '''
+        if metaName is not None:
+            for meta in self._certificate_metas:
+                if 'name' in meta.attrs and meta.attrs['name'] == metaName:
+                    return meta.attrs['content']
         return None
 
     @staticmethod
-    def load_certificate_http_metas(url, http_header_name, http_header_value):
+    def load_certificate_http_metas(url, http_header_name, http_header_value, lms_servers_auth_user, lms_servers_auth_pass):
         '''
         Extracts a dictionary with all HTTP meta headers.
         '''
+        logger.info("url {}".format(url))
         request_headers = { http_header_name : http_header_value }
-        response = requests.get(url, headers=request_headers)
+        auth = None
+        if lms_servers_auth_user is not None and lms_servers_auth_pass is not None:
+            auth = HTTPBasicAuth(lms_servers_auth_user, lms_servers_auth_pass)
+        response = requests.get(url, headers=request_headers, auth=auth)
         soup = BeautifulSoup(response.text, features="html.parser")
 
         return soup.find_all('meta')

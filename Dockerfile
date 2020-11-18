@@ -1,24 +1,42 @@
-FROM python:3-alpine
+# Docker image for the nau-course-certificate application.
+# It uses wkhtmltopdf package from maintainers instead of repository version.
+# Because we are using features that are only available on the patched qt version of wkhtmltopdf.
+# It is based on ubuntu image because the wkhtmltopdf deb depends on 'libjpeg-turbo8' package that was removed from the debian repositories.
+# In future we hope that wkhtmltopdf maintainer review the code and its dependencies.
+FROM ubuntu:20.04
+MAINTAINER ivo.branco@fccn.pt
 
-# install uwsgi
-RUN apk add --virtual .build-dependencies \
-            --no-cache \
-            python3-dev \
-            build-base \
-            linux-headers \
-            pcre-dev
-RUN apk add --no-cache pcre
+ENV DEBIAN_FRONTEND noninteractive
 
-# dependencies of this app
-RUN apk add --no-cache wkhtmltopdf
+RUN apt-get update
+RUN apt-get upgrade -y
+
+# Download and install wkhtmltopdf
+RUN apt-get install -y build-essential xorg libssl-dev libxrender-dev wget
+
+# Install wkhtmltopdf dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends xvfb libfontconfig libjpeg-turbo8 xfonts-75dpi fontconfig
+
+# Download and install wkhtmltopdf from maintainers page so we include a version with a patched qt and include support for more features.
+RUN wget --quiet https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+RUN dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
+RUN rm wkhtmltox_0.12.6-1.bionic_amd64.deb
+
+# Install python3 and pip
+RUN apt-get install -y python3.9 python3-pip
+
+# Cleanup apt cache
+RUN apt-get -y clean && \
+    apt-get -y purge && \
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
 WORKDIR /app
-COPY . .
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN python3 -m pip install -r requirements.txt
 
-# clean python3 dev
-RUN apk del .build-dependencies && rm -rf /var/cache/apk/*
+COPY app.py uwsgi.ini ./
+COPY static static
+COPY nau nau
 
 # Expose the port
 EXPOSE 5000

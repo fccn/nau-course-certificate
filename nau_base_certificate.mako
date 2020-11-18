@@ -10,53 +10,73 @@ from django.utils.translation import get_language_bidi
 dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
 %>
-
-## % if cc_first_name is None:
-## <html>
-## <body>
-## Associe à sua <a target="_blank" href="/account/settings">conta</a> (no separador Contas Vinculadas) da NAU um <b>Cartão de Cidadão</b> para imprimir este certificado.
-## </body>
-## </html>
-## % else:
-
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
 <head dir="${dir_rtl}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
-
-  <!-- meta for pdf printing -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  ## metas for pdf printing
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
+  ##<meta name="pdfkit-page-height" content="110mm">
+  
+  ## Fix put certificate on middle of the page
+  <meta name="pdfkit-margin-left" content="0mm" />
+  <meta name="pdfkit-margin-right" content="0mm" />
+  <meta name="pdfkit-margin-bottom" content="0mm" />
+  <meta name="pdfkit-margin-top" content="0mm" />
+  <meta name="pdfkit-zoom" content="2" />
 
-  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_05_26_4_certificate_date_${certificate_date_issued}">
+  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_11_16_3_certificate_date_${certificate_date_issued}">
   <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
+  <meta name="nau-course-certificate-limit-pages" content="1">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${document_title}</title>
   <%static:css group='style-certificates'/>
   <link rel="stylesheet" type="text/css" href="${static.certificate_asset_url('certificates-styles')}">
   <style>
 
 @page {
-  size: A4;
-  margin: 10mm 10mm 10mm 10mm;
+  size: A4 landscape;
+  margin: 0mm 0mm 0mm 0mm;
 }
 
+@media print {
+
+  body {
+    margin: 0 !important;
+  }
+
+  .sr-only {
+    display: none;
+  }
+
+  .wrapper-about {
+    display: none;
+  }
+
+  .ednxt-certificate {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+}
 @media all {
 
 .ednxt-certificate__footer-information {
     position: absolute;
-    left: 0cm;
+    left: -1cm;
     bottom: 0.8cm;
     z-index: 1;
 }
 
 .ednxt-certificate__footer-link {
     position: absolute;
-    right: 0.5cm;
-    bottom: 0.5cm;
-    z-index: 1;
+    bottom: 1cm;
+    left: 9.5cm;
+    width: auto;
+    display: block;
+    margin-top: 0px;
 }
 
     .linkedin-button {
@@ -90,12 +110,20 @@ course_mode_class = course_mode if course_mode else ''
       max-width: 29cm;
    }
 
-   .nau-logo {
-     max-height: 70px;
-     position: absolute;
-     right: 0.7cm;
-     top: 0cm;
-   }
+.nau-logo-funders
+{
+    max-width: 9cm !important;
+    position: absolute;
+    left: 10cm;
+    bottom: 1.5cm;
+}
+
+.nau-logo {
+    max-height: 2cm;
+    position: absolute;
+    right: 0.7cm;
+    top: 1cm;
+}
 
    .cert-footer-rp {
       height: 4em;
@@ -109,32 +137,34 @@ course_mode_class = course_mode if course_mode else ''
 
 .cert-left {
     position: absolute;
-    top: 8cm;
-    left: 11cm;
-    width: 17cm;
+    top: 6cm;
+    left: 10cm;
+    width: 18cm;
     text-align: justify;
     z-index: 1;
 }
 
 .cert-right {
-    width: 7cm;
-    float: right;
+    width: 8.8cm;
+    padding: 1cm;
     position: absolute;
-    right: 2em;
+    left: 0cm;
     top: 10cm;
-    font-size: 8pt;
-    line-height: 10pt;
-  z-index: 1;
+    font-size: 22pt;
+    z-index: 1;
+    color: white;
+    text-align: center;
 }
 
 .ednxt-certificate__header-title {
     font-weight: bold;
     position: absolute;
-    top: 2cm;
+    top: 4cm;
     left: 11cm;
     width: 17cm;
     text-align: center;
-  z-index: 1;
+    z-index: 1;
+    color: black;
 }
 
 .cert-text {
@@ -152,37 +182,56 @@ ul {
     margin-left: 0;
 }
 
-li {
-        padding-left: 20px !important;
-  list-style: none;
-  background-repeat: no-repeat;
-  background-size: 1em;
-   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA5CAMAAABUBBiJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQAAABERESMjIzQ0NEdHR1dXV2lpaXp6eomJiZiYmKenp7W1tcPDw9DQ0N3d3ezs7P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABPYQtoAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNWRHWFIAAAF8SURBVEhL7ZTbsoMgDEWDttZLq/7/155AdhARufTtzHS9lDhdRsMW2r/kJ2b4B+I6TO63VZwM0WYXbeL6IDIft2wSZ27Xu35N4jYQ0QNeg/jp2RtQNIgLP2bgVYsza6FXK9rXO3mVovOeKIQacbNj8fsAKsSkVyGKZ1aUSlGEJzkLKIni0YzyoCDCe6EMKIhuH6KNEPKieF00UEdWHJ13HYwlJ7p8pgZjyYgf8U4JPbgXN/sdXROjHOI6GBqCf8lGUPIFGS/a84RPBlT7/nIayVmYQEUZPNGIepHyuFEMRNyfkTCv8oKXaB9AHOWPjAyRz0/L4ook+qgIJWObTLJMRU3xw/Emt1xllXnQQNTXsi3xoLcTtRyiJoxGLHpcTxOI2qhD6zcupwnFtwjgJqNKKGpLR3YyzElEXBwaoTtO4t7B4oY3H4XnLOpgyw0jEd9gRcNI1LCbTEhBJErYnsV+F9F+9yZ9OkXE4kx9YQNBLG6FwHhisZqfeMu+/wENQbEvRyBuQAAAAABJRU5ErkJggg==');
-}
-
 .ednxt-certificate__footer-signatory {
-
+  width: 100%;
 }
 
 .ednxt-certificate__footer-signatories {
     position: absolute;
-    top: 12cm;
+    top: 10.5cm;
     left: 10cm;
     text-align: center;
-    width: 19cm;
+    width: 18cm;
     z-index: 1;
+}
+
+.ednxt-certificate__footer-information_id a {
+    color: #a7a4a4;
+}
+
+.course-image {
+  max-height: 8cm;
+  position: absolute;
+  left: 0.8cm;
+  top: 4cm;
+  max-width: 6.7cm !important;
+  padding: 0.5cm;
+  background-color: white;
+  border-radius: 25px;
+}
+.left-panel-course-name {
+  max-height: 8cm;
+  position: absolute;
+  left: 0.8cm;
+  top: 1cm;
+  max-width: 7.3cm;
+  color: white;
+  font-size: 20px;
+}
+.organization-logo {
+  max-height: 1.5cm;
+  position: absolute;
+  left: 10cm;
+  top: 1.2cm;
+  max-width: 12cm;
 }
 
 }
   </style>
   <%static:optional_include_mako file="cert-head-extra.html" is_theming_enabled="True" />
 </head>
-  <body>
-
-  <div class="layout-accomplishment view-valid-accomplishment ${dir_rtl} certificate certificate-${course_mode_class} ednxt-certificate__container" data-view="valid-accomplishment">
-   <div style="height: 1.2em;"></div>
+  <body class="layout-accomplishment view-valid-accomplishment ${dir_rtl} certificate certificate-${course_mode_class} ednxt-certificate__container" data-view="valid-accomplishment">
     <div class="wrapper-view" dir="${dir_rtl}">
-    <p></p>
       <hr class="divider sr-only">
       % if user.is_authenticated() and user.id == int(accomplishment_user_id):
         <%include file="/certificates/_accomplishment-banner.html" />
@@ -198,36 +247,46 @@ li {
         </div>
       % endif
 
-      % if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
+    % if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
 
-        ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
-        <iframe id="certificateToPdfIframe" src="//${ request.get_host().replace('lms','course-certificate') }/inline${request.META.get('RAW_URI')}" style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;"> </iframe>
+      ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
+      <iframe id="certificateToPdfIframe" src="//${ request.get_host().replace('lms','course-certificate') }/inline${request.META.get('RAW_URI')}" 
+        style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;">
+      </iframe>
 
     % else:
 
       <div class="ednxt-container">
         <div class="ednxt-certificate">
-
-
-
+          
           <div class="ednxt-certificate__header">
-            <div class="ednxt-certificate__header-logo" style="width: 100%;">
+            <div class="ednxt-certificate__header-logo" style="width: 100%;">                
             </div>
           </div>
       <h1 class="ednxt-certificate__header-title">${document_title}</h1>
           <div class="cert-left">
-      <p class="cert-text">Certifica-se que <span class="cert-text name">${accomplishment_copy_name | h}</span> participou no curso de Higiene das Mãos na Prevenção de Infeções, com uma duração de 3 horas.
-      </p>
+      <p class="cert-text">
 <%
 def title_case(in_str):
   return ' '.join(w.title() if len(w) > 2 else w.lower() for w in in_str.split()) if in_str else None
 %>
-Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Cartão Cidadão número ${cc_nic} ${cc_nic_check_digit}.
-
-
+        ${certificate_description}
+          % if cc_first_name is None or cc_last_name is None or cc_nic is None:
+            <span class="cert-text name">${accomplishment_copy_name | h}</span>,
+          % else:
+            <span class="cert-text name">${cc_first_name | title_case } ${cc_last_name | title_case}</span> com Cartão Cidadão número
+            % if cc_nic_check_digit is None: 
+              ${cc_nic},
+            % else: 
+              ${cc_nic} ${cc_nic_check_digit},
+            % endif
+          % endif
+       ${accomplishment_copy_description_full} ${accomplishment_copy_course_name} ${accomplishment_copy_course_description}
+      </p>
 <p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
               </div>
              <div class="cert-right">
+             ${context.get('left_msg', '')}
            </div>
           <div class="signatures">
 
@@ -239,12 +298,13 @@ Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Ca
                     % for signatory in certificate_data.get('signatories', []):
                       % if signatory['name'] <> "":
                     <div class="ednxt-certificate__footer-signatory">
-                       <span class="role">${signatory['title']}</span>
                        % if signatory['signature_image_path'] <> "":
                          <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
                        % endif
                       <p class="ednxt-certificate__footer-signatory_credentials">
-                        <span class="signatory">(${signatory['name']})</span>
+                        <span class="signatory">(${signatory['name']})</span><br/>
+                        <span class="role">${signatory['title']}</span>
+                        <span class="organization">${signatory['organization']}</span>
                       </p>
                     </div>
                       % endif
@@ -256,8 +316,29 @@ Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Ca
 
           </div>
           <div class="ednxt-certificate__footer">
-<img class="certificate-background" src="${static.certificate_asset_url('certificado-ctc')}">
-<img class="nau-logo" src="${certificate_logo_large if certificate_logo_large else logo_src}" alt="${certificate_logo_large_alt if certificate_logo_large_alt else platform_name}">
+
+% if certificate_background is UNDEFINED:
+  <img class="certificate-background" src="${static.certificate_asset_url('nau-certificado-background')}">
+% else:
+  <img class="certificate-background" src="${certificate_background}">
+% endif
+
+<img class="nau-logo" src="${static.certificate_asset_url('nau-logo-certificado')}" alt="Logo da Plataforma NAU - Sempre a Aprender">
+% if not context.get('certificate_background') or force_add_course_image_left_panel:
+  <img class="course-image" src="${full_course_image_url}" alt="Imagem do curso">
+% endif
+
+% if not context.get('certificate_background') or force_add_course_name_left_panel:
+<div class="left-panel-course-name">
+  ${accomplishment_copy_course_name}
+</div>
+% endif
+
+% if not context.get('certificate_background') or force_add_organization_logo_to_header:
+<img class="organization-logo" src="https://uploads.static.stage.nau.fccn.pt/${organization_logo}" alt="${organization_long_name}">
+% endif
+
+<img class="nau-logo-funders" src="${static.certificate_asset_url('3logos-financiadores-portugal-2020-compete-feder')}" alt="Logos das entidades financiadoras">
             <div class="ednxt-certificate__footer-information">
               <div class="ednxt-certificate__footer-information_logo">
                 <h3 class="sr-only">${_("Supported by the following organizations")}</h3>
@@ -284,40 +365,23 @@ Nome completo ${cc_first_name | title_case } ${cc_last_name | title_case} com Ca
 
     </div>
 
-    <div class="wrapper-about">
-      <aside role="complementary" class="about" aria-label="About">
-        <%include file="/certificates/_about-edx.html" />
-        <%include file="/certificates/_about-accomplishments.html" />
-      </aside>
-    </div>
+    % if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
+      <script type="text/javascript">
 
-    <hr class="divider sr-only">
-  </div>
-
-    <%include file="/certificates/_assets-secondary.html" />
-
-    <script type="text/javascript">
-      ## // code adds a new button that prints a certificate
-      ## var printButton = document.getElementById("action-print-view");
-      ## var printButtonCloned = printButton.cloneNode(true);
-      ## printButton.parentElement.appendChild(printButtonCloned);
-      ## printButtonCloned.id = "action-print-view-2";
-      ## printButtonCloned.addEventListener("click", function(event){
-        ## window.location.assign("//${ request.get_host().replace('lms','course-certificate') }/attachment${request.META.get('RAW_URI')}");
-      ## });
-
-      // commented code that replace the browser print with a call to download certificate has PDF.
-      document.getElementById("action-print-view").addEventListener("click", printView);
-	    function printView(event) {
-	    // Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
-	       window.location.assign("//${ request.get_host().replace('lms','course-certificate') }/attachment${request.META.get('RAW_URI')}");
-	    }
-	</script>
+        // commented code that replace the browser print with a call to download certificate has PDF.
+        function printView(event) {
+          ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
+          window.location.assign("//${ request.get_host().replace('lms','course-certificate') }/attachment${request.META.get('RAW_URI')}");
+        }
+        document.getElementById("action-print-view").onclick = printView;
+      </script>
+    % else:
+      <%include file="/certificates/_assets-secondary.html" />
+    % endif
 
     %if badge:
       <%include file="/certificates/_badges-modal.html" />
     %endif
+
   </body>
 </html>
-
-## % endif
