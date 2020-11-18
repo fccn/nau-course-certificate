@@ -9,6 +9,8 @@
 from django.utils.translation import get_language_bidi
 dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
+
+nau_certificate_issued_display_iframe = True
 %>
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
@@ -246,122 +248,115 @@ ul {
         </div>
       % endif
 
-    % if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
+      % if nau_certificate_issued_display_iframe and request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
 
-      ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
-      <iframe id="certificateToPdfIframe" src="//${ request.get_host().replace('lms','course-certificate') }/inline${request.META.get('RAW_URI')}" 
-        style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;">
-      </iframe>
-
-    % else:
-
-      <div class="ednxt-container">
-        <div class="ednxt-certificate">
-          
-          <div class="ednxt-certificate__header">
-            <div class="ednxt-certificate__header-logo" style="width: 100%;">                
-            </div>
-          </div>
-      <h1 class="ednxt-certificate__header-title">${document_title}</h1>
-          <div class="cert-left">
-      <p class="cert-text">
-<%
-def title_case(in_str):
-  return ' '.join(w.title() if len(w) > 2 else w.lower() for w in in_str.split()) if in_str else None
-%>
-        ${certificate_description}
-          % if cc_first_name is None or cc_last_name is None or cc_nic is None:
-            <span class="cert-text name">${accomplishment_copy_name | h}</span>,
-          % else:
-            <span class="cert-text name">${cc_first_name | title_case } ${cc_last_name | title_case}</span> com Cartão Cidadão número
-            % if cc_nic_check_digit is None: 
-              ${cc_nic},
-            % else: 
-              ${cc_nic} ${cc_nic_check_digit},
-            % endif
-          % endif
-       ${accomplishment_copy_description_full} ${accomplishment_copy_course_name} ${accomplishment_copy_course_description}
-      </p>
-<p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
+        ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
+        <iframe id="certificateToPdfIframe" src="//${ request.get_host().replace('lms','course-certificate') }/inline${request.META.get('RAW_URI')}" 
+          style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;">
+        </iframe>
+      % else:
+        <div class="ednxt-container">
+          <div class="ednxt-certificate">
+            
+            <div class="ednxt-certificate__header">
+              <div class="ednxt-certificate__header-logo" style="width: 100%;">                
               </div>
-             <div class="cert-right">
-             ${context.get('left_msg', '')}
-           </div>
-          <div class="signatures">
-
-            <div class="ednxt-certificate__footer-signatures">
-              % if mode != 'base':
-                <h3 class="sr-only">${_("Noted by")}</h3>
-                <div class="ednxt-certificate__footer-signatories">
-                  % if certificate_data:
-                    % for signatory in certificate_data.get('signatories', []):
-                      % if signatory['name'] <> "":
-                    <div class="ednxt-certificate__footer-signatory">
-                       % if signatory['signature_image_path'] <> "":
-                         <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
-                       % endif
-                      <p class="ednxt-certificate__footer-signatory_credentials">
-                        <span class="signatory">(${signatory['name']})</span><br/>
-                        <span class="role">${signatory['title']}</span>
-                        <span class="organization">${signatory['organization']}</span>
-                      </p>
-                    </div>
-                      % endif
-                    % endfor
+            </div>
+            <h1 class="ednxt-certificate__header-title">${document_title}</h1>
+            <div class="cert-left">
+              <p class="cert-text">
+                <%
+                def title_case(in_str):
+                  return ' '.join(w.title() if len(w) > 2 else w.lower() for w in in_str.split()) if in_str else None
+                %>
+                ${certificate_description}
+                % if cc_first_name is None or cc_last_name is None or cc_nic is None:
+                  <span class="cert-text name">${accomplishment_copy_name | h}</span>,
+                % else:
+                  <span class="cert-text name">${cc_first_name | title_case } ${cc_last_name | title_case}</span> com Cartão Cidadão número
+                  % if cc_nic_check_digit is None: 
+                    ${cc_nic},
+                  % else: 
+                    ${cc_nic} ${cc_nic_check_digit},
                   % endif
-                </div>
+                % endif
+                ${accomplishment_copy_description_full} ${accomplishment_copy_course_name} ${accomplishment_copy_course_description}
+              </p>
+              <p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
+            </div>
+            <div class="cert-right">
+              ${context.get('left_msg', '')}
+            </div>
+            <div class="signatures">
+              <div class="ednxt-certificate__footer-signatures">
+                % if mode != 'base':
+                  <h3 class="sr-only">${_("Noted by")}</h3>
+                  <div class="ednxt-certificate__footer-signatories">
+                    % if certificate_data:
+                      % for signatory in certificate_data.get('signatories', []):
+                        % if signatory['name'] <> "":
+                      <div class="ednxt-certificate__footer-signatory">
+                         % if signatory['signature_image_path'] <> "":
+                           <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
+                         % endif
+                        <p class="ednxt-certificate__footer-signatory_credentials">
+                          <span class="signatory">(${signatory['name']})</span><br/>
+                          <span class="role">${signatory['title']}</span>
+                          <span class="organization">${signatory['organization']}</span>
+                        </p>
+                      </div>
+                        % endif
+                      % endfor
+                    % endif
+                  </div>
+                % endif
+              </div>
+            </div>
+            <div class="ednxt-certificate__footer">
+
+              % if certificate_background is UNDEFINED:
+                <img class="certificate-background" src="${static.certificate_asset_url('nau-certificado-background')}">
+              % else:
+                <img class="certificate-background" src="${certificate_background}">
               % endif
-            </div>
 
-          </div>
-          <div class="ednxt-certificate__footer">
+              <img class="nau-logo" src="${static.certificate_asset_url('nau-logo-certificado')}" alt="Logo da Plataforma NAU - Sempre a Aprender">
+              % if not context.get('certificate_background') or force_add_course_image_left_panel:
+                <img class="course-image" src="${full_course_image_url}" alt="Imagem do curso">
+              % endif
 
-% if certificate_background is UNDEFINED:
-  <img class="certificate-background" src="${static.certificate_asset_url('nau-certificado-background')}">
-% else:
-  <img class="certificate-background" src="${certificate_background}">
-% endif
-
-<img class="nau-logo" src="${static.certificate_asset_url('nau-logo-certificado')}" alt="Logo da Plataforma NAU - Sempre a Aprender">
-% if not context.get('certificate_background') or force_add_course_image_left_panel:
-  <img class="course-image" src="${full_course_image_url}" alt="Imagem do curso">
-% endif
-
-% if not context.get('certificate_background') or force_add_course_name_left_panel:
-<div class="left-panel-course-name">
-  ${accomplishment_copy_course_name}
-</div>
-% endif
-
-% if not context.get('certificate_background') or force_add_organization_logo_to_header:
-<img class="organization-logo" src="https://uploads.static.stage.nau.fccn.pt/${organization_logo}" alt="${organization_long_name}">
-% endif
-
-<img class="nau-logo-funders" src="${static.certificate_asset_url('3logos-financiadores-portugal-2020-compete-feder')}" alt="Logos das entidades financiadoras">
-            <div class="ednxt-certificate__footer-information">
-              <div class="ednxt-certificate__footer-information_logo">
-                <h3 class="sr-only">${_("Supported by the following organizations")}</h3>
+              % if not context.get('certificate_background') or force_add_course_name_left_panel:
+              <div class="left-panel-course-name">
+                ${accomplishment_copy_course_name}
               </div>
-              <div class="ednxt-certificate__footer-information_date">
-                <span class="title">${certificate_date_issued_title}</span>
-                <span class="value">${certificate_date_issued}</span>
+              % endif
+
+              % if not context.get('certificate_background') or force_add_organization_logo_to_header:
+              <img class="organization-logo" src="https://uploads.static.stage.nau.fccn.pt/${organization_logo}" alt="${organization_long_name}">
+              % endif
+
+              <img class="nau-logo-funders" src="${static.certificate_asset_url('3logos-financiadores-portugal-2020-compete-feder')}" alt="Logos das entidades financiadoras">
+              <div class="ednxt-certificate__footer-information">
+                <div class="ednxt-certificate__footer-information_logo">
+                  <h3 class="sr-only">${_("Supported by the following organizations")}</h3>
+                </div>
+                <div class="ednxt-certificate__footer-information_date">
+                  <span class="title">${certificate_date_issued_title}</span>
+                  <span class="value">${certificate_date_issued}</span>
+                </div>
+                <div class="ednxt-certificate__footer-information_id">
+                  <span class="title">${certificate_id_number_title}${certificate_id_number_separator if certificate_id_number_separator else ':'}</span>
+                  <span class="value"><a href="/certificates/${certificate_id_number}">${certificate_id_number}</a></span>
+                </div>
               </div>
-              <div class="ednxt-certificate__footer-information_id">
-                <span class="title">${certificate_id_number_title}${certificate_id_number_separator if certificate_id_number_separator else ':'}</span>
-                <span class="value"><a href="/certificates/${certificate_id_number}">${certificate_id_number}</a></span>
+              <div class="ednxt-certificate__footer-link">
+                <a href="https://lms.nau.edu.pt/certificates/${certificate_id_number}">https://lms.nau.edu.pt/certificates/${certificate_id_number}</a>
               </div>
-            </div>
-            <div class="ednxt-certificate__footer-link">
-              <a href="https://lms.nau.edu.pt/certificates/${certificate_id_number}">https://lms.nau.edu.pt/certificates/${certificate_id_number}</a>
             </div>
           </div>
         </div>
-      </div>
       % endif
-
-      <div class="wrapper-about">
-      </div>
-
+      <div class="wrapper-about"></div>
     </div>
 
     % if request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
