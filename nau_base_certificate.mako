@@ -341,7 +341,7 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
                 def uppercase(in_str):
                   return str(in_str).upper()
                 %>
-                ${certificate_description}
+                ${context.get('certificate_description', 'Certifica-se que')}
                 % if cc_first_name is None or cc_last_name is None or cc_nic is None:
                   ${accomplishment_copy_name | h,uppercase}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
                 % else:
