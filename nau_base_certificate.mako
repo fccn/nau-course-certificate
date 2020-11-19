@@ -279,7 +279,7 @@ ul {
   position: absolute;
   left: 10cm;
   top: 1.2cm;
-  max-width: 12cm;
+  max-width: 13cm;
 }
 
 }
