@@ -17,7 +17,7 @@ course_mode_class = course_mode if course_mode else ''
 #   Title of the document. Eg. "CERTIFICADO"
 #
 # certificate_description
-#   First part of the certificate description. Eg. "Certificate que"
+#   First part of the certificate description. Eg. "Certifica-se que "
 #
 # accomplishment_copy_description_full
 #   Third part of the certificate description, after the person name. Eg. ", concluiu o Curso "
@@ -85,11 +85,10 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
   <meta name="keywords" content="Certificado, ${accomplishment_copy_course_name}, ${organization_short_name}">
   <meta name="author" content="${platform_name}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   ## Print to PDF on A4 paper on landscape
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
-  
   ## Remove any default margins for print to PDF
   <meta name="pdfkit-margin-left" content="0mm" />
   <meta name="pdfkit-margin-right" content="0mm" />
@@ -97,16 +96,13 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
   <meta name="pdfkit-margin-top" content="0mm" />
   ## To fix the PDF printing weren't being printed too small.
   <meta name="pdfkit-zoom" content="2" />
-
   ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
   ## This certificate code version. Increase it when changing this code on the LMS.
   <meta name="nau-course-certificate-version" content="certificate_template_version_2020_11_16_3_certificate_date_${certificate_date_issued}">
-
   ## The filename when downloading the PDF of an issued certificate.
   <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
-
   ## To limit the number of pages that the PDF have.
   <meta name="nau-course-certificate-limit-pages" content="1">
 
