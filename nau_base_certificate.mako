@@ -339,7 +339,7 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
               <p class="cert-text">
                 <%
                 def uppercase(in_str):
-                  return str(in_str).upper()
+                  return in_str.upper()
                 %>
                 ${context.get('certificate_description', 'Certifica-se que')}
                 % if cc_first_name is None or cc_last_name is None or cc_nic is None:
