@@ -81,6 +81,9 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
 <head dir="${dir_rtl}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
+  <meta name="description" content="${document_meta_description}">
+  <meta name="keywords" content="Certificado, ${accomplishment_copy_course_name}, ${organization_short_name}">
+  <meta name="author" content="${platform_name}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   ## Print to PDF on A4 paper on landscape
