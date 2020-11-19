@@ -100,7 +100,7 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
   ## This certificate code version. Increase it when changing this code on the LMS.
-  <meta name="nau-course-certificate-version" content="certificate_template_version_2020_11_16_3_certificate_date_${certificate_date_issued}">
+  <meta name="nau-course-certificate-version" content="v_2020_11_19_c_date_${certificate_date_issued}">
   ## The filename when downloading the PDF of an issued certificate.
   <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
   ## To limit the number of pages that the PDF have.
