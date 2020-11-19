@@ -311,16 +311,15 @@ ul {
                 %>
                 ${certificate_description}
                 % if cc_first_name is None or cc_last_name is None or cc_nic is None:
-                  <span class="cert-text name">${accomplishment_copy_name | h}</span>,
+                  <span class="cert-text name">${accomplishment_copy_name | h}</span>${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
                 % else:
-                  <span class="cert-text name">${cc_first_name | title_case } ${cc_last_name | title_case}</span> com Cartão Cidadão número
+                  <span class="cert-text name">${cc_first_name | h,title_case } ${cc_last_name | h,title_case}</span> com Cartão Cidadão número
                   % if cc_nic_check_digit is None: 
-                    ${cc_nic},
+                    ${cc_nic | h}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
                   % else: 
-                    ${cc_nic} ${cc_nic_check_digit},
+                    ${cc_nic | h} ${cc_nic_check_digit | h}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
                   % endif
                 % endif
-                ${accomplishment_copy_description_full} ${accomplishment_copy_course_name} ${accomplishment_copy_course_description}
               </p>
               <p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
             </div>
