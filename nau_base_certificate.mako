@@ -104,11 +104,30 @@ nau_certificate_issued_display_iframe = False
 }
 @media all {
 
+.ednxt-certificate__footer-information_date .title {
+  color: ${context.get('footer-information-date-title-color', 'unset')};
+}
+
+.ednxt-certificate__footer-information_date .value {
+  color: ${context.get('footer-information-date-value-color', 'unset')};
+}
+
+.ednxt-certificate__footer-information_id .title {
+  color: ${context.get('footer-information-id-title-color', 'unset')};
+}
+
+.ednxt-certificate__footer-information_id .value {
+  color: ${context.get('footer-information-id-value-color', 'unset')};
+}
+.ednxt-certificate__footer-information_id a {
+  color: unset;
+}
 .ednxt-certificate__footer-information {
     position: absolute;
     left: -1cm;
     bottom: 0.8cm;
     z-index: 1;
+    color: ${context.get('footer-information-color', 'white')};
 }
 
 .ednxt-certificate__footer-link {
@@ -234,10 +253,6 @@ ul {
     text-align: center;
     width: 18cm;
     z-index: 1;
-}
-
-.ednxt-certificate__footer-information_id a {
-    color: #a7a4a4;
 }
 
 .course-image {
