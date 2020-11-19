@@ -1,5 +1,5 @@
 <%! from django.utils.translation import ugettext as _ %>
-<%! from django.utils.translation import activate%>
+<%! from django.utils.translation import activate %>
 <%
   activate(user_language)
 %>
@@ -10,7 +10,37 @@ from django.utils.translation import get_language_bidi
 dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
 
-nau_certificate_issued_display_iframe = True
+#
+# Certificate parameters:
+#
+# document_title : 
+#
+# certificate_background:
+#   Link to certificate background, when included it removes the organization logo, course image and name on left panel.
+#
+# force_add_course_image_left_panel
+#   Force add course image on left panel even with different certificate background.
+#
+# force_add_course_name_left_panel
+#   Force add course name on left panel even with different certificate background.
+#
+# force_add_organization_logo_to_header
+#   Force add organization logo on left panel even with different certificate background.
+#
+# full_course_image_url
+#   Replace the course image with a different one.
+#   
+# organization_long_name
+#   Name of the organization, defaults to course organization name.
+#
+#
+# organization_logo_url
+#   Absolute URL to the organization logo. Replace it if you want a different logo for the organization.
+organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uploads.static.') if 'fccn.pt' in request.get_host() else 'uploads.static.prod.nau.fccn.pt' ) + '/' + str(organization_logo) ) if len(str(organization_logo))>0 else None
+#
+#
+# Option for development proposes (False for PROD and True during certificate development):
+nau_certificate_issued_display_iframe = False
 %>
 <!DOCTYPE html>
 <html class="no-js" lang="${user_language}">
@@ -18,19 +48,29 @@ nau_certificate_issued_display_iframe = True
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ## metas for pdf printing
+  
+  ## Print to PDF on A4 paper on landscape
   <meta name="pdfkit-page-size" content="A4">
   <meta name="pdfkit-orientation" content="Landscape">
   
-  ## Fix put certificate on middle of the page
+  ## Remove any default margins for print to PDF
   <meta name="pdfkit-margin-left" content="0mm" />
   <meta name="pdfkit-margin-right" content="0mm" />
   <meta name="pdfkit-margin-bottom" content="0mm" />
   <meta name="pdfkit-margin-top" content="0mm" />
+  ## To fix the PDF printing weren't being printed too small.
   <meta name="pdfkit-zoom" content="2" />
 
+  ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
+  ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+
+  ## This certificate code version. Increase it when changing this code on the LMS.
   <meta name="nau-course-certificate-version" content="certificate_template_version_2020_11_16_3_certificate_date_${certificate_date_issued}">
+
+  ## The filename when downloading the PDF of an issued certificate.
   <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
+
+  ## To limit the number of pages that the PDF have.
   <meta name="nau-course-certificate-limit-pages" content="1">
 
   <title>${document_title}</title>
@@ -331,8 +371,8 @@ ul {
               </div>
               % endif
 
-              % if not context.get('certificate_background') or force_add_organization_logo_to_header:
-              <img class="organization-logo" src="https://uploads.static.stage.nau.fccn.pt/${organization_logo}" alt="${organization_long_name}">
+              % if (not context.get('certificate_background') or force_add_organization_logo_to_header ) and organization_logo_url:
+              <img class="organization-logo" src="${organization_logo_url}" alt="${organization_long_name}">
               % endif
 
               <img class="nau-logo-funders" src="${static.certificate_asset_url('3logos-financiadores-portugal-2020-compete-feder')}" alt="Logos das entidades financiadoras">
