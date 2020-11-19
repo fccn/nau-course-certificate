@@ -70,7 +70,7 @@ course_mode_class = course_mode if course_mode else ''
 #
 #
 # Option for development proposes (False for PROD and True during certificate development):
-nau_certificate_issued_display_iframe = True
+nau_certificate_issued_display_iframe = False
 
 organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uploads.static.') if 'fccn.pt' in request.get_host() else 'uploads.static.prod.nau.fccn.pt' ) + '/' + str(organization_logo) ) if len(str(organization_logo))>0 else None
 %>
