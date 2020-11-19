@@ -135,19 +135,19 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
 
     @media all {
       .ednxt-certificate__footer-information_date .title {
-        color: ${context.get('footer_information_date_title_color', 'unset')};
+        color: ${context.get('footer_information_date_title_color', 'white')};
       }
       .ednxt-certificate__footer-information_date .value {
-        color: ${context.get('footer_information_date_value_color', 'unset')};
+        color: ${context.get('footer_information_date_value_color', 'white')};
       }
       .ednxt-certificate__footer-information_id .title {
-        color: ${context.get('footer_information_id_title_color', 'unset')};
+        color: ${context.get('footer_information_id_title_color', 'white')};
       }
       .ednxt-certificate__footer-information_id .value {
-        color: ${context.get('footer_information_id_value_color', 'unset')};
+        color: ${context.get('footer_information_id_value_color', 'white')};
       }
       .ednxt-certificate__footer-information_id a {
-        color: unset;
+        color: white;
       }
       .ednxt-certificate__footer-information {
         position: absolute;
