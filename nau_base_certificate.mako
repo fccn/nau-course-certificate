@@ -25,7 +25,9 @@ course_mode_class = course_mode if course_mode else ''
 # accomplishment_copy_course_description
 #   Fift part of the certificate description, after the course name. Eg. ", com uma duração estimada de X horas."
 #
-#
+# 
+# location
+#   Add a location and date after the certificate main text and before the signatures. Eg. "Lisboa" or "Porto"
 #
 #
 # certificate_background:
@@ -350,7 +352,9 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
                   % endif
                 % endif
               </p>
-              <p class="cert-text right">Lisboa, ${certificate_date_issued}</p>
+              % if context.get('location'):
+                <p class="cert-text right">${location}, ${certificate_date_issued}</p>
+              % endif
             </div>
             <div class="cert-right">
               ${context.get('left_msg', '')}
