@@ -335,14 +335,14 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
             <div class="cert-left">
               <p class="cert-text">
                 <%
-                def title_case(in_str):
-                  return ' '.join(w.title() if len(w) > 2 else w.lower() for w in in_str.split()) if in_str else None
+                def uppercase(in_str):
+                  return str(in_str).upper()
                 %>
                 ${certificate_description}
                 % if cc_first_name is None or cc_last_name is None or cc_nic is None:
-                  <span class="cert-text name">${accomplishment_copy_name | h}</span>${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
+                  ${accomplishment_copy_name | h,uppercase}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
                 % else:
-                  <span class="cert-text name">${cc_first_name | h } ${cc_last_name | h}</span> com Cartão Cidadão número
+                  ${cc_first_name | h } ${cc_last_name | h} com Cartão Cidadão número
                   % if cc_nic_check_digit is None: 
                     ${cc_nic | h}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
                   % else: 
