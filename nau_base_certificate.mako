@@ -1,5 +1,6 @@
 <%! from django.utils.translation import ugettext as _ %>
 <%! from django.utils.translation import activate %>
+<%! import distutils %>
 <%
   activate(user_language)
 %>
@@ -23,7 +24,7 @@ course_mode_class = course_mode if course_mode else ''
 #   Third part of the certificate description, after the person name. Eg. ", concluiu o Curso "
 #   
 # accomplishment_copy_course_description
-#   Fift part of the certificate description, after the course name. Eg. ", com uma duração estimada de X horas."
+#   Fifth part of the certificate description, after the course name. Eg. ", com uma duração estimada de X horas."
 #
 # 
 # location
@@ -33,14 +34,14 @@ course_mode_class = course_mode if course_mode else ''
 # certificate_background:
 #   Link to certificate background, when included it removes the organization logo, course image and name on left panel.
 #
-# force_add_course_image_left_panel
-#   Force add course image on left panel even with different certificate background.
+# add_course_image_left_panel
+#   Add course image on left panel. Defaults to True.
 #
-# force_add_course_name_left_panel
-#   Force add course name on left panel even with different certificate background.
+# add_course_name_left_panel
+#   Add course name on left panel. Defaults to True.
 #
-# force_add_organization_logo_to_header
-#   Force add organization logo on left panel even with different certificate background.
+# add_organization_logo_to_header
+#   Add organization logo on left panel. Defaults to True if the organization has a logo.
 #
 # accomplishment_copy_course_name
 #   Course name
@@ -390,17 +391,17 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
               % endif
 
               <img class="nau-logo" src="${static.certificate_asset_url('nau-logo-certificado')}" alt="Logo da Plataforma NAU - Sempre a Aprender">
-              % if not context.get('certificate_background') or force_add_course_image_left_panel:
+              % if bool(distutils.util.strtobool(context.get('add_course_image_left_panel', 'true'))):
                 <img class="course-image" src="${full_course_image_url}" alt="Imagem do curso">
               % endif
 
-              % if not context.get('certificate_background') or force_add_course_name_left_panel:
+              % if bool(distutils.util.strtobool(context.get('add_course_name_left_panel', 'true'))):
               <div class="left-panel-course-name">
                 ${accomplishment_copy_course_name}
               </div>
               % endif
 
-              % if (not context.get('certificate_background') or force_add_organization_logo_to_header ) and organization_logo_url:
+              % if bool(distutils.util.strtobool(context.get('add_organization_logo_to_header', 'true'))) and organization_logo_url:
                 <img class="organization-logo" src="${organization_logo_url}" alt="${organization_long_name}">
               % endif
               
