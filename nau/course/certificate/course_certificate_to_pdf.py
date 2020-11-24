@@ -1,7 +1,9 @@
+from abc import ABC, abstractmethod
 import logging
 import logging.config
 import requests
 import pdfkit
+import imgkit
 from bs4 import BeautifulSoup
 from builtins import dict, str
 import boto3
@@ -12,7 +14,7 @@ from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 
-class CourseCertificateToPDF:
+class CourseCertificateToBase(ABC):
     '''
     Converts an URL certificate to a PDF. If the URL contains a certificate id then save it to a S3 Bucket.
     On the 2nd request of that certificate returns the previous one.
@@ -50,49 +52,25 @@ class CourseCertificateToPDF:
         '''
         logger.info("Converting html certificate to PDF with URL: {}".format(self._url))
 
-        certificate_version = self.get_certificate_http_meta_version_value()
+        certificate_version = self._get_certificate_http_meta(self.http_header_meta_version_name())
         logger.info("certificate_version: {}".format(certificate_version))
-        s3_bucket_certificate_key = self._path + '/' + ( certificate_version if certificate_version else self.bucket_no_version()).replace(' ', '_')
-        pdf = None
+        s3_bucket_certificate_key = self._path + '/' + ( certificate_version if certificate_version else self.bucket_no_version()).replace(' ', '_') + self.s3_suffix()
+        
+        binary_output = None
         if (self._certificate_id is not None):
-            pdf = self.get_certificate_on_s3_bucket(self.bucket_name(), self.bucket_endpoint_url(), self.aws_access_key_id(), self.aws_secret_access_key(), s3_bucket_certificate_key)
+            binary_output = self.get_certificate_on_s3_bucket(self.bucket_name(), self.bucket_endpoint_url(), self.aws_access_key_id(), self.aws_secret_access_key(), s3_bucket_certificate_key)
 
-        if (pdf is None):
-            pdf = self.generate_new_certificate_to_pdf()
-
-            limit_pages = self._get_certificate_http_meta_limit_number_pages()
-            if (limit_pages is not None):
-                pdf = cut_pdf_limit_pages(pdf, 0, int(limit_pages))
+        if (binary_output is None):
+            binary_output = self.generate_new_certificate_to_dest_format()
 
         if (self._certificate_id is not None):
-            self.save_certificate(s3_bucket_certificate_key, pdf)
+            self.save_certificate(s3_bucket_certificate_key, binary_output)
 
-        return pdf
+        return binary_output
 
-    def get_filename(self):
-        filename = self._get_certificate_http_meta_filename_value()
-        return filename if filename is not None else self._config['CERTIFICATE_FILE_NAME']
-
-    def save_certificate(self, certificate_s3_key, pdf):
-        self.save_certificate_on_s3_bucket(self.bucket_name(), self.bucket_endpoint_url(), self.aws_access_key_id(), self.aws_secret_access_key(), certificate_s3_key, pdf)
-
-    def generate_new_certificate_to_pdf(self):
-        extracted_pdfkit_http_metas = self.extract_pdfkit_http_metas();
-        options_extracted_on_http_metas = self.removePdfKitPrefix(extracted_pdfkit_http_metas)
-
-        options_force_show_certificate_content = {
-            'custom-header' : [
-               (self.http_header_name(), self.http_header_value())
-           ]
-        }
-
-        options = {**options_force_show_certificate_content, **options_extracted_on_http_metas}
-
-        logger.info(options_extracted_on_http_metas)
-
-        pdf = pdfkit.from_url(self._url, False, options=options)
-
-        return pdf
+    @abstractmethod
+    def s3_suffix(self):
+        raise NotImplementedError("To be redefined in subclasses")
 
     def http_header_name(self):
         return self._config['HTTP_HEADER_NAME']
@@ -121,6 +99,7 @@ class CourseCertificateToPDF:
     def http_header_meta_filename_name(self):
         return self._config['HTTP_HEADER_META_FILENAME_NAME']
 
+
     def http_header_meta_limit_number_pages(self):
         return self._config.get('HTTP_HEADER_META_LIMIT_NUMBER_PAGES', None)
 
@@ -132,6 +111,25 @@ class CourseCertificateToPDF:
 
     def lms_servers_auth_pass(self):
         return self._config.get('LMS_SERVER_AUTH_PASS', None)
+
+    def http_header_meta_image_filename_name(self):
+        return self._config['HTTP_HEADER_META_IMAGE_FILENAME_NAME']
+
+    def http_header_meta_image_prefix(self):
+        return self._config['HTTP_HEADER_META_IMAGE_PREFIX']
+
+    def http_header_meta_image_format(self):
+        return self._config.get('HTTP_HEADER_META_IMAGE_FORMAT', 'imgkit-format')
+
+    def _get_certificate_http_meta(self, metaName:str, default=None):
+        '''
+        Get the value of a meta HTTP header of the certificate.
+        '''
+        if metaName is not None:
+            for meta in self._certificate_metas:
+                if 'name' in meta.attrs and meta.attrs['name'] == metaName:
+                    return meta.attrs['content']
+        return default
 
     @staticmethod
     def get_certificate_on_s3_bucket(bucket_name:str, endpoint_url, aws_access_key_id, aws_secret_access_key, certificate_s3_key):
@@ -150,38 +148,13 @@ class CourseCertificateToPDF:
                 logger.error("Received error: {0}".format(e), exc_info=True)
             return None
 
+    def save_certificate(self, certificate_s3_key, binary_output):
+        self.save_certificate_on_s3_bucket(self.bucket_name(), self.bucket_endpoint_url(), self.aws_access_key_id(), self.aws_secret_access_key(), certificate_s3_key, binary_output)
+
     @staticmethod
-    def save_certificate_on_s3_bucket(bucket_name, endpoint_url, aws_access_key_id, aws_secret_access_key, certificate_s3_key, pdf):
+    def save_certificate_on_s3_bucket(bucket_name, endpoint_url, aws_access_key_id, aws_secret_access_key, certificate_s3_key, binary):
         s3_client = boto3.client('s3', use_ssl=False, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key, endpoint_url=endpoint_url)
-        s3_client.put_object(Body=pdf, Bucket=bucket_name, Key=certificate_s3_key)
-
-    def get_certificate_http_meta_version_value(self):
-        '''
-        Get the value of the certificate HTTP meta version.
-        '''
-        return self._get_certificate_http_meta(self.http_header_meta_version_name())
-
-    def _get_certificate_http_meta_filename_value(self):
-        '''
-        Get the value of the certificate HTTP meta version.
-        '''
-        return self._get_certificate_http_meta(self.http_header_meta_filename_name())
-
-    def _get_certificate_http_meta_limit_number_pages(self):
-        '''
-        Get the value of the certificate HTTP meta limit number of pages.
-        '''
-        return self._get_certificate_http_meta(self.http_header_meta_limit_number_pages())
-
-    def _get_certificate_http_meta(self, metaName:str):
-        '''
-        Get the value of a meta HTTP header of the certificate.
-        '''
-        if metaName is not None:
-            for meta in self._certificate_metas:
-                if 'name' in meta.attrs and meta.attrs['name'] == metaName:
-                    return meta.attrs['content']
-        return None
+        s3_client.put_object(Body=binary, Bucket=bucket_name, Key=certificate_s3_key)
 
     @staticmethod
     def load_certificate_http_metas(url, http_header_name, http_header_value, lms_servers_auth_user, lms_servers_auth_pass):
@@ -198,19 +171,78 @@ class CourseCertificateToPDF:
 
         return soup.find_all('meta')
 
-    def extract_pdfkit_http_metas(self):
+    def extract_specific_http_metas(self, http_header_meta_prefix):
         '''
-        Get pdf kit certificate meta headers, those that are prefixed with with the value of the configuration HTTP_HEADER_META_PREFIX (pdfkit_).
+        Get pdf kit certificate meta headers, those that are prefixed with http_header_meta_prefix value. Eg. pdfkit-
         '''
-        pdfkit_metas = dict()
+        http_metas = dict()
         for meta in self._certificate_metas:
-            if 'name' in meta.attrs and meta.attrs['name'].startswith(self.http_header_meta_prefix()):
-                pdfkit_metas.update( { meta.attrs['name'] : meta.attrs['content']} )
+            if 'name' in meta.attrs and meta.attrs['name'].startswith(http_header_meta_prefix):
+                http_metas.update( { meta.attrs['name'] : meta.attrs['content']} )
 
-        return pdfkit_metas
+        # Remove pdf_kit prefix from each options dict key.
+        return {key.replace(http_header_meta_prefix, ''): value for key, value in http_metas.items()}
 
-    def removePdfKitPrefix(self, options):
-        '''
-        Remove pdf_kit prefix from each options dict key.
-        '''
-        return {key.replace(self.http_header_meta_prefix(), ''): value for key, value in options.items()}
+    def generate_options(self, http_header_meta_prefix):
+        options_extracted_on_http_metas = self.extract_specific_http_metas(http_header_meta_prefix);
+
+        options_force_show_certificate_content = {
+            'custom-header' : [
+               (self.http_header_name(), self.http_header_value())
+           ]
+        }
+
+        options = {**options_force_show_certificate_content, **options_extracted_on_http_metas}
+
+        logger.info(options_extracted_on_http_metas)
+        return options
+
+
+class CourseCertificateToPDF(CourseCertificateToBase):
+    '''
+    Convert a course certificate to a PDF.
+    '''
+
+    def __init__(self, config:Configuration, path:str, query_string:str):
+        super().__init__(config, path, query_string)
+
+    def get_filename(self):
+        filename = self._get_certificate_http_meta(self.http_header_meta_filename_name())
+        return filename if filename is not None else self._config['CERTIFICATE_FILE_NAME']
+
+    def s3_suffix(self):
+        return ".pdf"
+
+    def generate_new_certificate_to_dest_format(self):
+        options = self.generate_options(self.http_header_meta_prefix())
+
+        pdf = pdfkit.from_url(self._url, False, options=options)
+
+        limit_pages = self._get_certificate_http_meta(self.http_header_meta_limit_number_pages())
+        if (limit_pages is not None):
+            pdf = cut_pdf_limit_pages(pdf, 0, int(limit_pages))
+
+        return pdf
+
+class CourseCertificateToImage(CourseCertificateToBase):
+    '''
+    Generate a course certificate to an image.
+    '''
+
+    def __init__(self, config:Configuration, path:str, query_string:str):
+        super().__init__(config, path, query_string)
+
+    def get_filename(self):
+        return self._get_certificate_http_meta(self.http_header_meta_image_filename_name(), self._config.get('CERTIFICATE_IMAGE_FILE_NAME', 'certificate')) + \
+            '.' + \
+            self.image_format()
+
+    def image_format(self):
+        return self._get_certificate_http_meta(self.http_header_meta_image_format(), 'jpeg')
+
+    def s3_suffix(self):
+        return "." + self.image_format()
+
+    def generate_new_certificate_to_dest_format(self):
+        options = self.generate_options(self.http_header_meta_image_prefix())
+        return imgkit.from_url(self._url, False, options=options)

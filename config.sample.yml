@@ -2,9 +2,13 @@ HTTP_HEADER_NAME: X-NAU-Certificate-force-html
 HTTP_HEADER_VALUE: true
 LMS_SERVER_URL: https://lms.ENV.nau.fccn.pt
 CERTIFICATE_FILE_NAME: certificate.pdf
+CERTIFICATE_IMAGE_FILE_NAME: certificate
 HTTP_HEADER_META_PREFIX: pdfkit-
+HTTP_HEADER_META_IMAGE_PREFIX: imgkit-
+HTTP_HEADER_META_IMAGE_FORMAT: imgkit-format
 HTTP_HEADER_META_VERSION_NAME: nau-course-certificate-version
 HTTP_HEADER_META_FILENAME_NAME: nau-course-certificate-filename
+HTTP_HEADER_META_IMAGE_FILENAME_NAME: nau-course-certificate-image-filename
 HTTP_HEADER_META_LIMIT_NUMBER_PAGES: nau-course-certificate-limit-pages
 BUCKET_NAME: nau-ENV-certificates
 BUCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx

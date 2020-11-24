@@ -100,6 +100,12 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
   ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
+  <meta name="og:image" content="https://${ request.get_host().replace('lms','course-certificate') }/image${request.META.get('RAW_URI')}" />
+  ## Print to PNG Image the og:image
+  <meta name="imgkit-format" content="jpeg" />
+  <meta name="imgkit-crop-h" content="1025" />
+  <meta name="imgkit-zoom" content="1.3" />
+
   ## This certificate code version. Increase it when changing this code on the LMS.
   <meta name="nau-course-certificate-version" content="v_2020_11_19_c_date_${certificate_date_issued}">
   ## The filename when downloading the PDF of an issued certificate.
