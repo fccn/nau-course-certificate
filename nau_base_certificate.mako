@@ -309,7 +309,7 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
   <body class="layout-accomplishment view-valid-accomplishment ${dir_rtl} certificate certificate-${course_mode_class} ednxt-certificate__container" data-view="valid-accomplishment">
     <div class="wrapper-view" dir="${dir_rtl}">
       <hr class="divider sr-only">
-      % if user.is_authenticated() and user.id == int(accomplishment_user_id):
+      % if user.is_authenticated and user.id == int(accomplishment_user_id):
         <%include file="/certificates/_accomplishment-banner.html" />
         <div class="wrapper-banner wrapper-banner-user">
           <section class="banner banner-user">
@@ -370,9 +370,9 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
                   <div class="ednxt-certificate__footer-signatories">
                     % if certificate_data:
                       % for signatory in certificate_data.get('signatories', []):
-                        % if signatory['name'] <> "":
+                        % if signatory['name'] != "":
                       <div class="ednxt-certificate__footer-signatory">
-                         % if signatory['signature_image_path'] <> "":
+                         % if signatory['signature_image_path'] != "":
                            <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
                          % endif
                         <p class="ednxt-certificate__footer-signatory_credentials">
