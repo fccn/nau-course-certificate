@@ -268,6 +268,7 @@ organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uplo
         text-align: center;
         width: 18cm;
         z-index: 1;
+        display: flex;
       }
       .course-image {
         max-height: 8cm;
