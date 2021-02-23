@@ -1,6 +1,7 @@
 <%! from django.utils.translation import ugettext as _ %>
 <%! from django.utils.translation import activate %>
 <%! import distutils %>
+<%! import re %>
 <%
   activate(user_language)
 %>
@@ -342,20 +343,33 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
             <div class="cert-left">
               <p class="cert-text">
                 <%
-                def uppercase(in_str):
-                  return in_str.upper()
+                  def uppercase(in_str):
+                    return in_str.upper()
+                  
+                  def append_space(current, in_str):
+                    current_ends_with_text=bool(re.search("[a-zA-Z0-9]$", current))
+                    in_str_starts_with_text=bool(re.search("^[a-zA-Z0-9]", in_str))
+                    if current_ends_with_text and in_str_starts_with_text:
+                      return current + ' ' + in_str
+                    else:
+                      return current + in_str
+
+                  body_text =''
+                  body_text=append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
+                  if cc_first_name is None or cc_last_name is None or cc_nic is None:
+                    body_text=append_space(body_text, uppercase(accomplishment_copy_name))
+                  else:
+                    body_text=append_space(body_text, cc_first_name)
+                    body_text=append_space(body_text, cc_last_name)
+                    body_text=append_space(body_text, " com Cartão Cidadão número ")
+                    body_text=append_space(body_text, cc_nic)
+                    if cc_nic_check_digit is not None:
+                      body_text=append_space(body_text, cc_nic_check_digit)
+                  body_text=append_space(body_text, accomplishment_copy_description_full)
+                  body_text=append_space(body_text, accomplishment_copy_course_name)
+                  body_text=append_space(body_text, accomplishment_copy_course_description)
                 %>
-                ${context.get('certificate_description', 'Certifica-se que')}
-                % if cc_first_name is None or cc_last_name is None or cc_nic is None:
-                  ${accomplishment_copy_name | h,uppercase}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
-                % else:
-                  ${cc_first_name | h } ${cc_last_name | h} com Cartão Cidadão número
-                  % if cc_nic_check_digit is None: 
-                    ${cc_nic | h}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
-                  % else: 
-                    ${cc_nic | h} ${cc_nic_check_digit | h}${accomplishment_copy_description_full}${accomplishment_copy_course_name}${accomplishment_copy_course_description}
-                  % endif
-                % endif
+                ${body_text}
               </p>
               % if context.get('location'):
                 <p class="cert-text right">${location}, ${certificate_date_issued}</p>
