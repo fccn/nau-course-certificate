@@ -4,7 +4,7 @@
 # It is based on ubuntu image because the wkhtmltopdf deb depends on 'libjpeg-turbo8' package that was removed from the debian repositories.
 # In future we hope that wkhtmltopdf maintainer review the code and its dependencies.
 FROM ubuntu:20.04
-MAINTAINER ivo.branco@fccn.pt
+LABEL maintainer="ivo.branco@fccn.pt"
 
 ENV DEBIAN_FRONTEND noninteractive
 
