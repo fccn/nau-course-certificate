@@ -163,13 +163,29 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
         bottom: 0.8cm;
         z-index: 1;
       }
-      .ednxt-certificate__footer-link {
+      .ednxt-certificate__footer-certification-information {
         position: absolute;
-        bottom: 1cm;
+        bottom: 0.5cm;
         left: 9.5cm;
         width: auto;
         display: block;
         margin-top: 0px;
+        font-size: 9px;
+        padding-right: 10px;
+      }
+      .ednxt-certificate__footer-link {
+          position: absolute;
+          bottom: 15.5cm;
+          left: 24.3cm;
+          width: auto;
+          display: block;
+          margin-top: 0px;
+          -webkit-transform: rotate(270deg);
+          -moz-transform: rotate(270deg);
+          -o-transform: rotate(270deg);
+          -ms-transform: rotate(270deg);
+          transform: rotate(270deg);
+          font-size: 9px;
       }
       .linkedin-button {
         margin-top: 24px;
@@ -446,6 +462,15 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
               </div>
               <div class="ednxt-certificate__footer-link">
                 <a href="https://lms.nau.edu.pt/certificates/${certificate_id_number}">https://lms.nau.edu.pt/certificates/${certificate_id_number}</a>
+              </div>
+              <div class="ednxt-certificate__footer-certification-information">
+                <%
+                  certification_information = {
+                    "pt-pt": "A pessoa mencionada neste certificado completou todas as atividades relativas ao curso em questão. Para mais informações sobre Certificação na plataforma NAU e requisitos para a sua obtenção visite <a target='_blank' href='//nau.edu.pt/sobre/certificacao'>nau.edu.pt/sobre/certificacao</a>. Este certificado é uma prova de aprendizagem, não tendo qualquer validade formal como prova de qualificação ou como formação conferente de grau.",
+                    "en": "The person mentioned in this certificate has completed all activities related to the course in question. For more information on Certification on the NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/sobre/certificacao'>nau.edu.pt/sobre/certificacao</a>. This certificate is an evidence of learning, and has no formal proof of qualification or as a degree that gives a level of education.",
+                  }
+                %>
+                ${certification_information[user_language]}
               </div>
             </div>
           </div>
