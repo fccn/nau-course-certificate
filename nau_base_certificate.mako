@@ -11,6 +11,14 @@
 from django.utils.translation import get_language_bidi
 dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
+language_query_string = "language="+user_language
+course_certificate_app_path = request.get_full_path() + ( "?" if "?" not in request.get_full_path() else "&" ) + language_query_string
+
+# Replace the lms with course-certificate on the hostname
+course_certificate_host = "//${ request.get_host().replace('lms','course-certificate') }"
+
+# Uncomment next line for local development
+#course_certificate_host = "http://localhost:5000"
 
 #
 # Certificate parameters:
@@ -101,7 +109,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
   ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
-  <meta name="og:image" content="https://${ request.get_host().replace('lms','course-certificate') }/image${request.META.get('RAW_URI')}" />
+  <meta name="og:image" content="https://${ request.get_host().replace('lms','course-certificate') }/image${course_certificate_app_path}" />
   ## Print to PNG Image the og:image
   <meta name="imgkit-format" content="jpeg" />
   <meta name="imgkit-crop-h" content="1025" />
@@ -342,9 +350,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
       % endif
 
       % if nau_certificate_issued_display_iframe and request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
-
-        ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
-        <iframe id="certificateToPdfIframe" src="//${ request.get_host().replace('lms','course-certificate') }/inline${request.META.get('RAW_URI')}" 
+        <iframe id="certificateToPdfIframe" src="${course_certificate_host}/inline${course_certificate_app_path}" 
           style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;">
         </iframe>
       % else:
@@ -484,8 +490,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
 
         // commented code that replace the browser print with a call to download certificate has PDF.
         function printView(event) {
-          ## Replace http://localhost:5000 with //${ request.get_host().replace('lms','course-certificate') }
-          window.location.assign("//${ request.get_host().replace('lms','course-certificate') }/attachment${request.META.get('RAW_URI')}");
+          window.location.assign("${course_certificate_host}/attachment${course_certificate_app_path}");
         }
         document.getElementById("action-print-view").onclick = printView;
       </script>

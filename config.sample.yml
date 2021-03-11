@@ -15,6 +15,15 @@ BUCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
 BUCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 BUCKET_ENDPOINT_URL: http://rgw.nau.fccn.pt
 BUCKET_CERTIFICATE_NO_VERSION_KEY: no-version
+DIGITAL_SIGNATURE:
+  CERTIFICATE_P12_PATH: ./digital_signature_dev/sign-pdf.dev.nau.fccn.pt.p12
+  CERTIFICATE_P12_PASSWORD: "1234"
+  signaturebox: 742,30,810,60
+  contact: ajuda@nau.edu.pt
+  location: Lisboa
+  reason: 
+    pt-pt: Certificado de curso assinado digitalmente por NAU
+    en: Digitally signed course certificate by NAU
 LOGGING: 
   version: 1
   disable_existing_loggers: False

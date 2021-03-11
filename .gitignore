@@ -6,3 +6,4 @@ venv/
 .settings
 **/*.pyc
 config.yml
+.vscode/
