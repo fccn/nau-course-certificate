@@ -22,6 +22,9 @@ RUN wget --quiet https://github.com/wkhtmltopdf/packaging/releases/download/0.12
 RUN dpkg -i wkhtmltox_0.12.6-1.bionic_amd64.deb
 RUN rm wkhtmltox_0.12.6-1.bionic_amd64.deb
 
+# Install swig debian package for pip requirement endesive
+RUN apt-get install -y swig
+
 # Install python3 and pip
 RUN apt-get install -y python3.9 python3-pip
 

@@ -9,6 +9,7 @@ services:
       - "rgw.nau.fccn.pt:10.0.12.62"
     volumes:
       - ./config.yml:/app/config.yml
+      - ./digital_signature_dev:/app/digital_signature_dev
     ports:
       - "5000:5000"
 
