@@ -184,8 +184,8 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
       .ednxt-certificate__footer-link {
           position: absolute;
           bottom: 15.5cm;
-          left: 24.3cm;
-          width: auto;
+          left: 22cm;
+          width: 500px;
           display: block;
           margin-top: 0px;
           -webkit-transform: rotate(270deg);
