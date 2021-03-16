@@ -15,7 +15,7 @@ language_query_string = "language="+user_language
 course_certificate_app_path = request.get_full_path() + ( "?" if "?" not in request.get_full_path() else "&" ) + language_query_string
 
 # Replace the lms with course-certificate on the hostname
-course_certificate_host = "//${ request.get_host().replace('lms','course-certificate') }"
+course_certificate_host = "//" + request.get_host().replace('lms','course-certificate')
 
 # Uncomment next line for local development
 #course_certificate_host = "http://localhost:5000"
