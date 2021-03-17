@@ -69,6 +69,7 @@ def digital_sign_pdf(pdf_data_in: bytes, config : dict, language : str) -> bytes
         "location": location,
         "reason": reason,
         "signingdate": date,
+        "signature_img_distort": False,
     }
 
     p12_certificate_path = config.get('CERTIFICATE_P12_PATH')
