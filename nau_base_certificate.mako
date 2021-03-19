@@ -328,6 +328,9 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
         bottom: 3cm;
         max-height: 2.7cm;
       }
+      .wrapper-banner-user {
+        margin-top: 0px;
+      }
     }
   </style>
   <%static:optional_include_mako file="cert-head-extra.html" is_theming_enabled="True" />
@@ -337,16 +340,6 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
       <hr class="divider sr-only">
       % if user.is_authenticated and user.id == int(accomplishment_user_id):
         <%include file="/certificates/_accomplishment-banner.html" />
-        <div class="wrapper-banner wrapper-banner-user">
-          <section class="banner banner-user">
-            <div class="message message-block message-notice">
-              <div class="wrapper-copy-and-actions">
-                <div class="message-actions">
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
       % endif
 
       % if nau_certificate_issued_display_iframe and request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
