@@ -125,3 +125,12 @@ Insert a new password: 1234
 openssl pkcs12 -export -out sign-pdf.dev.nau.fccn.pt.p12 -inkey sign-pdf.dev.nau.fccn.pt.key -in sign-pdf.dev.nau.fccn.pt.crt -certfile NAU_DEV_ROOT.pem
 ```
 
+## STAGE
+
+Delete old print of certificate and then download it a new one on pt-pt language.
+
+```bash
+AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY s3cmd --host 10.0.12.62 --host-bucket nau-stage-certificates --no-ssl rm -rf "s3://nau-stage-certificates/certificates/8f7276c174194d36bc5063d90967b766/"
+
+curl -v https://course-certificate.stage.nau.fccn.pt/attachment/certificates/8f7276c174194d36bc5063d90967b766?language=pt-pt --output nau_stage_course_certificate_example.pdf
+```
