@@ -32,8 +32,11 @@ def digital_sign_pdf(pdf_data_in: bytes, config : dict, language : str) -> bytes
     """
     def _signature_img_path(language : str):
         signature_img_base_path = "./static/images/digital_sign/digital_signature_"
-        signature_img_path = signature_img_base_path + language + ".png"
-        signature_img_path = signature_img_path if path.exists(signature_img_base_path + language + ".png") else (signature_img_base_path + "_en.png")
+        signature_img_path : str = None
+        if language:
+            signature_img_path = signature_img_base_path + language + ".png"
+        if not signature_img_path or not path.exists(signature_img_path):
+            signature_img_path = signature_img_base_path + "en.png"
         return signature_img_path
 
     def _get_config_value(config, language: str, default_value):       
