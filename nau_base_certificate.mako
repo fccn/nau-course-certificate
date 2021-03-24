@@ -283,9 +283,6 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
       ul {
         margin-left: 0;
       }
-      .ednxt-certificate__footer-signatory {
-        width: 100%;
-      }
       .ednxt-certificate__footer-signatories {
         position: absolute;
         top: 10.5cm;
@@ -293,7 +290,6 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
         text-align: center;
         width: 18cm;
         z-index: 1;
-        display: flex;
       }
       .course-image {
         max-height: 8cm;
@@ -401,16 +397,17 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
                     % if certificate_data:
                       % for signatory in certificate_data.get('signatories', []):
                         % if signatory['name'] != "":
-                      <div class="ednxt-certificate__footer-signatory">
-                         % if signatory['signature_image_path'] != "":
-                           <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
-                         % endif
-                        <p class="ednxt-certificate__footer-signatory_credentials">
-                          <span class="signatory">(${signatory['name']})</span><br/>
-                          <span class="role">${signatory['title']}</span>
-                          <span class="organization">${signatory['organization']}</span>
-                        </p>
-                      </div>
+                          ## display: flex isn't working on wkhtmltopdf and wkhtmltoimage so an old width with percentage works
+                          <div class="ednxt-certificate__footer-signatory" style="width: ${ 100/len(certificate_data.get('signatories', [])) -1 }%;">
+                            % if signatory['signature_image_path'] != "":
+                              <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
+                            % endif
+                            <p class="ednxt-certificate__footer-signatory_credentials">
+                              <span class="signatory">(${signatory['name']})</span><br/>
+                              <span class="role">${signatory['title']}</span>
+                              <span class="organization">${signatory['organization']}</span>
+                            </p>
+                          </div>
                         % endif
                       % endfor
                     % endif
