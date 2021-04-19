@@ -367,7 +367,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
 
                   body_text =''
                   body_text=append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
-                  if cc_first_name is None or cc_last_name is None or cc_nic is None:
+                  if cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '':
                     body_text=append_space(body_text, uppercase(accomplishment_copy_name))
                   else:
                     body_text=append_space(body_text, cc_first_name)
