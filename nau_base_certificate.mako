@@ -403,7 +403,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
                               <img class="ednxt-certificate__footer-signatory_signature" src="${static.url(signatory['signature_image_path'])}" alt="${signatory['name']}">
                             % endif
                             <p class="ednxt-certificate__footer-signatory_credentials">
-                              <span class="signatory">(${signatory['name']})</span><br/>
+                              <span class="signatory">${ "(" if signatory['signature_image_path'] != "" else "" }${signatory['name']}${ ")" if signatory['signature_image_path'] != "" else "" }</span><br/>
                               <span class="role">${signatory['title']}</span>
                               <span class="organization">${signatory['organization']}</span>
                             </p>
