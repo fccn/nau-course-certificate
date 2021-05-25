@@ -124,8 +124,450 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
 
   <title>${document_title}</title>
   <%static:css group='style-certificates'/>
-  <link rel="stylesheet" type="text/css" href="${static.certificate_asset_url('certificates-styles')}">
+  
   <style>
+    /* eduNEXT certificate template asset certificates_styles.css */
+    .layout-accomplishment {
+        min-width: 1024px;
+        height: auto;
+        background: #eceff0
+    }
+
+    .ednxt-certificate {
+        float: none;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        width: 100%;
+        max-width: 74rem;
+        margin-bottom: 40px;
+        padding: 1.25rem;
+        background: #fff;
+        border-radius: 3px;
+        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .2);
+        overflow: auto
+    }
+
+    .ednxt-certificate__vars {
+        white-space: pre-line;
+        background: #141e1e;
+        color: #dce6e6;
+        margin: 0 auto;
+        font-family: Monaco, Consolas, "Lucida Console", monospace;
+        padding: 1em 1em 2.5em;
+        line-height: 1.45;
+        position: relative;
+        overflow-x: scroll
+    }
+
+    .ednxt-certificate__vars::-moz-selection {
+        color: #141e1e;
+        background: #dce6e6
+    }
+
+    .ednxt-certificate__vars::selection {
+        color: #141e1e;
+        background: #dce6e6
+    }
+
+    .ednxt-certificate__header {
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__header {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__content-course:last-child:not(:first-child),
+    .ednxt-certificate__content-description:last-child:not(:first-child),
+    .ednxt-certificate__content-detail:last-child:not(:first-child),
+    .ednxt-certificate__content-recipient:last-child:not(:first-child),
+    .ednxt-certificate__content-summary:last-child:not(:first-child),
+    .ednxt-certificate__content:last-child:not(:first-child),
+    .ednxt-certificate__footer-information:last-child:not(:first-child),
+    .ednxt-certificate__footer-information_date:last-child:not(:first-child),
+    .ednxt-certificate__footer-information_id:last-child:not(:first-child),
+    .ednxt-certificate__footer-information_logo:last-child:not(:first-child),
+    .ednxt-certificate__footer-link:last-child:not(:first-child),
+    .ednxt-certificate__footer-signatories:last-child:not(:first-child),
+    .ednxt-certificate__footer-signatures:last-child:not(:first-child),
+    .ednxt-certificate__footer:last-child:not(:first-child),
+    .ednxt-certificate__header-logo:last-child:not(:first-child),
+    .ednxt-certificate__header-title:last-child:not(:first-child),
+    .ednxt-certificate__header:last-child:not(:first-child) {
+        float: right
+    }
+
+    .ednxt-certificate__header-title {
+        width: 33.33333%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        color: #0079bc;
+        font-size: 48px;
+        font-weight: 300;
+        line-height: 1.1;
+        text-transform: uppercase
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__header-title {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__header-logo {
+        width: 50%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__header-logo {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__header-logo a {
+        float: right;
+        transition: none;
+        max-width: 100%;
+        border-bottom: 0
+    }
+
+    .ednxt-certificate__header-logo a:active,
+    .ednxt-certificate__header-logo a:focus,
+    .ednxt-certificate__header-logo a:hover {
+        border-bottom: 0
+    }
+
+    .ednxt-certificate__header-logo img {
+        min-width: 64px;
+        max-width: 100%;
+        min-height: 64px;
+        max-height: 124px
+    }
+
+    .ednxt-certificate__content {
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        margin: 12px 0;
+        padding: 40px
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__content {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__content-course,
+    .ednxt-certificate__content-description,
+    .ednxt-certificate__content-detail,
+    .ednxt-certificate__content-recipient,
+    .ednxt-certificate__content-summary {
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        margin-bottom: 20px
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__content-course,
+        .ednxt-certificate__content-description,
+        .ednxt-certificate__content-detail,
+        .ednxt-certificate__content-recipient,
+        .ednxt-certificate__content-summary {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__content-description,
+    .ednxt-certificate__content-detail,
+    .ednxt-certificate__content-summary {
+        font-size: 18px;
+        line-height: 1.6
+    }
+
+    .ednxt-certificate__content-course,
+    .ednxt-certificate__content-recipient {
+        color: #000;
+        font-weight: 600;
+        line-height: 1.2
+    }
+
+    .ednxt-certificate__content-recipient {
+        font-size: 40px
+    }
+
+    .ednxt-certificate__content-course {
+        font-size: 28px
+    }
+
+    .ednxt-certificate__footer {
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__footer-signatures {
+        width: 66.66667%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer-signatures {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__footer-signatories {
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        text-align: center
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer-signatories {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__footer-signatory {
+        float: none;
+        display: inline-block;
+        vertical-align: middle;
+        width: 32%;
+        padding-left: .9375rem;
+        padding-right: .9375rem
+    }
+
+    .ednxt-certificate__footer-signatory_signature {
+        display: block;
+        max-width: 100%;
+        max-height: 6.25rem;
+        margin: 0 auto;
+        padding: 1.25rem .625rem
+    }
+
+    .ednxt-certificate__footer-signatory_name {
+        margin-bottom: .3125rem;
+        font-size: .875rem;
+        font-weight: 600;
+        line-height: 1.6
+    }
+
+    .ednxt-certificate__footer-signatory_credentials {
+        font-size: .75rem;
+        line-height: 1.5
+    }
+
+    .ednxt-certificate__footer-signatory_credentials .role {
+        white-space: pre-line
+    }
+
+    .ednxt-certificate__footer-signatory_credentials .organization {
+        display: block;
+        margin-top: .3125rem;
+        font-style: italic
+    }
+
+    .ednxt-certificate__footer-information {
+        width: 33.33333%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer-information {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__footer-information_logo {
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        margin-bottom: 16px
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer-information_logo {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__footer-information_logo img {
+        float: right;
+        max-width: 124px;
+        margin-top: 2px
+    }
+
+    .ednxt-certificate__footer-information_date,
+    .ednxt-certificate__footer-information_id {
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        margin-bottom: 10px;
+        text-align: right
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer-information_date,
+        .ednxt-certificate__footer-information_id {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    .ednxt-certificate__footer-information_date span,
+    .ednxt-certificate__footer-information_id span {
+        display: block;
+        margin-bottom: 0;
+        font-size: 12px;
+        font-weight: 600
+    }
+
+    .ednxt-certificate__footer-information_date .title,
+    .ednxt-certificate__footer-information_id .title {
+        color: #a7a4a4;
+        text-transform: uppercase;
+        line-height: 1.5;
+        letter-spacing: .03125rem
+    }
+
+    .ednxt-certificate__footer-information_date .value,
+    .ednxt-certificate__footer-information_id .value {
+        color: #6b6969;
+        font-weight: 700
+    }
+
+    .ednxt-certificate__footer-link {
+        width: 100%;
+        float: left;
+        padding-left: .625rem;
+        padding-right: .625rem;
+        -webkit-flex: 0 0 100%;
+        -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+        display: none;
+        margin-top: 16px;
+        text-align: center;
+        font-size: 12px
+    }
+
+    @media screen and (min-width:40em) {
+        .ednxt-certificate__footer-link {
+            padding-left: .9375rem;
+            padding-right: .9375rem
+        }
+    }
+
+    @media print {
+        body {
+            margin: 1.875rem 1.875rem 0!important
+        }
+        .ednxt-certificate {
+            margin-bottom: 0;
+            padding: 1px 10px;
+            box-shadow: none
+        }
+        .ednxt-certificate__header-title {
+            width: 50%;
+            font-size: 32px
+        }
+        .ednxt-certificate__header__header-logo img {
+            max-height: 86px
+        }
+        .ednxt-certificate__content {
+            padding: 16px
+        }
+        .ednxt-certificate__content-recipient {
+            font-size: 36px
+        }
+        .ednxt-certificate__content-course {
+            font-size: 26px
+        }
+        .ednxt-certificate__footer-information_logo img {
+            max-width: 124px!important
+        }
+        .ednxt-certificate__footer-link {
+            display: block
+        }
+    }
+
+    @page {
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 0;
+        margin-bottom: 0
+    }
+
+    @media (max-width:1024px) {
+        .message-block {
+            width: 100%
+        }
+    }
+  </style>
+
+  <style>
+    /* Custom NAU template styles */
+
     @page {
       size: A4 landscape;
       margin: 0mm 0mm 0mm 0mm;
