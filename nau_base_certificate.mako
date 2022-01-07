@@ -3,7 +3,11 @@
 <%! import distutils %>
 <%! import re %>
 <%
-  activate(user_language)
+  if content_language is UNDEFINED:
+    language = user_language
+  else:
+    language = content_language
+  activate(language)
 %>
 <%namespace name='static' file='/static_content.html'/>
 <%
@@ -11,7 +15,7 @@
 from django.utils.translation import get_language_bidi
 dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
 course_mode_class = course_mode if course_mode else ''
-language_query_string = "language="+user_language
+language_query_string = "language="+language
 course_certificate_app_path = request.get_full_path() + ( "?" if "?" not in request.get_full_path() else "&" ) + language_query_string
 
 # Replace the lms with course-certificate on the hostname
@@ -85,9 +89,54 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 nau_certificate_issued_display_iframe = False
 default_organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uploads.static.') if 'fccn.pt' in request.get_host() else 'uploads.static.prod.nau.fccn.pt' ) + '/' + str(organization_logo) ) if len(str(organization_logo))>0 else None
 organization_logo_url = context.get('organization_logo_url', default_organization_logo_url )
+
+# Utility function to transform string to uppercase
+def uppercase(in_str):
+  return in_str.upper()
+
+# If need append a space when joining the `current` and the `in_str`
+def append_space(current, in_str):
+  current_ends_with_text=bool(re.search("[a-zA-Z0-9]$", current))
+  in_str_starts_with_text=bool(re.search("^[a-zA-Z0-9]", in_str))
+  if current_ends_with_text and in_str_starts_with_text:
+    return current + ' ' + in_str
+  else:
+    return current + in_str
+
+# Build `body_text` variable
+body_text = ''
+body_text = append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
+if cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '':
+  body_text = append_space(body_text, uppercase(accomplishment_copy_name))
+else:
+  body_text = append_space(body_text, cc_first_name)
+  body_text = append_space(body_text, cc_last_name)
+  body_text = append_space(body_text, " com Cartão Cidadão número ")
+  body_text = append_space(body_text, cc_nic)
+  if cc_nic_check_digit is not None:
+    body_text = append_space(body_text, cc_nic_check_digit)
+body_text = append_space(body_text, accomplishment_copy_description_full)
+body_text = append_space(body_text, accomplishment_copy_course_name)
+body_text = append_space(body_text, accomplishment_copy_course_description)
+
+
+# Generate a dict with all certificate parameters that students can change,
+# so if they change its `name` the print to PDF is forced to be regenerated.
+nau_course_certificate_data_dict = {
+  "template_version": "v_2020_11_19",
+  "language": language,
+  "certificate_date_issued": certificate_date_issued,
+  "body_text": body_text,
+}
+# Generate a hash of the dict. If the hash changes the print to PDF will
+# generate a new file.
+import hashlib
+import json
+nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_data_dict, sort_keys=True).encode('utf-8')).hexdigest()
+
 %>
 <!DOCTYPE html>
-<html class="no-js" lang="${user_language}">
+<html class="no-js" lang="${language}">
 <head dir="${dir_rtl}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
@@ -116,7 +165,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
   <meta name="imgkit-zoom" content="1.3" />
 
   ## This certificate code version. Increase it when changing this code on the LMS.
-  <meta name="nau-course-certificate-version" content="v_2020_11_19_c_date_${certificate_date_issued}">
+  <meta name="nau-course-certificate-version" content="${nau_course_certificate_version}">
   ## The filename when downloading the PDF of an issued certificate.
   <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
   ## To limit the number of pages that the PDF have.
@@ -795,33 +844,6 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
             <h1 class="ednxt-certificate__header-title">${document_title}</h1>
             <div class="cert-left">
               <p class="cert-text">
-                <%
-                  def uppercase(in_str):
-                    return in_str.upper()
-                  
-                  def append_space(current, in_str):
-                    current_ends_with_text=bool(re.search("[a-zA-Z0-9]$", current))
-                    in_str_starts_with_text=bool(re.search("^[a-zA-Z0-9]", in_str))
-                    if current_ends_with_text and in_str_starts_with_text:
-                      return current + ' ' + in_str
-                    else:
-                      return current + in_str
-
-                  body_text =''
-                  body_text=append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
-                  if cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '':
-                    body_text=append_space(body_text, uppercase(accomplishment_copy_name))
-                  else:
-                    body_text=append_space(body_text, cc_first_name)
-                    body_text=append_space(body_text, cc_last_name)
-                    body_text=append_space(body_text, " com Cartão Cidadão número ")
-                    body_text=append_space(body_text, cc_nic)
-                    if cc_nic_check_digit is not None:
-                      body_text=append_space(body_text, cc_nic_check_digit)
-                  body_text=append_space(body_text, accomplishment_copy_description_full)
-                  body_text=append_space(body_text, accomplishment_copy_course_name)
-                  body_text=append_space(body_text, accomplishment_copy_course_description)
-                %>
                 ${body_text}
               </p>
               % if context.get('location'):
@@ -908,7 +930,7 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
                     "en": "The person mentioned in this certificate has completed all course activities. For more information about Certification at NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. This certificate is an evidence of learning, and has no formal proof of qualification or as a degree that gives a level of education.",
                   }
                 %>
-                ${certification_information.get(user_language, certification_information.get('pt-pt',''))}
+                ${certification_information.get(language, certification_information.get('pt-pt',''))}
               </div>
             </div>
           </div>
