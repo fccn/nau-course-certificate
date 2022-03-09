@@ -158,7 +158,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
   ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
-  <meta name="og:image" content="https://${ request.get_host().replace('lms','course-certificate') }/image${course_certificate_app_path}" />
+  <meta name="image" property="og:image" content="https://${ request.get_host().replace('lms','course-certificate') }/image${course_certificate_app_path}" />
   ## Print to PNG Image the og:image
   <meta name="imgkit-format" content="jpeg" />
   <meta name="imgkit-crop-h" content="1025" />
