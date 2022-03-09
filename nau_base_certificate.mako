@@ -140,7 +140,8 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
 <head dir="${dir_rtl}">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
-  <meta name="description" content="${document_meta_description}">
+  <meta name="title" property="og:title" content="${document_title}, ${accomplishment_copy_course_name}, ${organization_short_name}">
+  <meta name="description" property="og:description" content="${document_meta_description} ${accomplishment_copy_course_name}">
   <meta name="keywords" content="Certificado, ${accomplishment_copy_course_name}, ${organization_short_name}">
   <meta name="author" content="${platform_name}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
