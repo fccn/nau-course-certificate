@@ -168,7 +168,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
   ## This certificate code version. Increase it when changing this code on the LMS.
   <meta name="nau-course-certificate-version" content="${nau_course_certificate_version}">
   ## The filename when downloading the PDF of an issued certificate.
-  <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${course_id}.pdf">
+  <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${certificate_id_number}.pdf">
   ## To limit the number of pages that the PDF have.
   <meta name="nau-course-certificate-limit-pages" content="1">
 
