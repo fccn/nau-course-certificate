@@ -770,7 +770,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         color: black;
       }
       .cert-text {
-        font-size: 1.2em;
+        font-size: 1.1rem;
         line-height: 1.5em;
       }
       p.cert-text.name {
