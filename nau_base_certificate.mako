@@ -111,7 +111,7 @@ if cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_la
 else:
   body_text = append_space(body_text, cc_first_name)
   body_text = append_space(body_text, cc_last_name)
-  body_text = append_space(body_text, " com Cartão Cidadão número ")
+  body_text = append_space(body_text, ", com Cartão Cidadão número ")
   body_text = append_space(body_text, cc_nic)
   if cc_nic_check_digit is not None:
     body_text = append_space(body_text, cc_nic_check_digit)
