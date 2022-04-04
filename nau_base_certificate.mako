@@ -94,10 +94,16 @@ organization_logo_url = context.get('organization_logo_url', default_organizatio
 def uppercase(in_str):
   return in_str.upper()
 
+# Utility function to clean tags on text
+CLEANR = re.compile('<.*?>') 
+def cleanhtml(raw_html):
+  cleantext = re.sub(CLEANR, '', raw_html)
+  return cleantext
+
 # If need append a space when joining the `current` and the `in_str`
 def append_space(current, in_str):
-  current_ends_with_text=bool(re.search("[a-zA-Z0-9]$", current))
-  in_str_starts_with_text=bool(re.search("^[a-zA-Z0-9]", in_str))
+  current_ends_with_text=bool(re.search("[a-zA-Z0-9]$", cleanhtml(current)))
+  in_str_starts_with_text=bool(re.search("^[a-zA-Z0-9]", cleanhtml(in_str)))
   if current_ends_with_text and in_str_starts_with_text:
     return current + ' ' + in_str
   else:
