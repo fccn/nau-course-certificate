@@ -43,6 +43,17 @@ After each download delete the generated file for next test:
 AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYY s3cmd --host 10.0.12.62 --host-bucket nau-development-certificates --no-ssl rm -rf "s3://nau-development-certificates/certificates/4d1d8ad2bcea43b7bac918ca328183b9/"
 ```
 
+## Release
+
+Create a new tag naming vx.x.x example v2.0.0.
+
+```bash
+git tag vx.x.x
+git push --tags
+```
+
+The Github actions would update the latest docker image and generate multiple tags depending on the tag naming. Like "2", "2.0" and "2.0.0".
+
 ## DEV
 Change the certificate template on openedx LMS on https://lms.dev.nau.fccn.pt/admin/certificates/certificatetemplate/2/change/ with content [nau_base_certificate.mako](nau_base_certificate.mako).
 
