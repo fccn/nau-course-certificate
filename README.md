@@ -5,13 +5,15 @@ This should be installed as a docker container.
 
 For development proposes you can run using flask (recomended), uwsgi or uwsgi inside of a docker container.
 
-Prepare:
+## Virtual environment
 
 ```bash
 virtualenv venv --python=python3
 source venv/bin/activate
 python -m pip install -r requirements.txt --upgrade
 ```
+
+## Development server
 
 Run development server as:
 
@@ -41,6 +43,14 @@ Click on "Print certificate" button or go to http://localhost:5000/attachment/ce
 After each download delete the generated file for next test:
 ```bash
 AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=YYYYYYYYYYYYYYYYYYYYYYYYYYY s3cmd --host 10.0.12.62 --host-bucket nau-development-certificates --no-ssl rm -rf "s3://nau-development-certificates/certificates/4d1d8ad2bcea43b7bac918ca328183b9/"
+```
+
+## Upgrade dependencies
+
+On a virtual environment, install `pip-upgrader` and run it.
+```
+python -m pip install pip-upgrader
+pip-upgrade
 ```
 
 ## Release
