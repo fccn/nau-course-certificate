@@ -5,8 +5,6 @@ services:
     build:
       context: .
     # needed for development proposes
-    extra_hosts: 
-      - "rgw.nau.fccn.pt:10.0.12.62"
     volumes:
       - ./config.yml:/app/config.yml
       - ./digital_signature_dev:/app/digital_signature_dev
