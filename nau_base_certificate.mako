@@ -109,10 +109,13 @@ def append_space(current, in_str):
   else:
     return current + in_str
 
+certificate_require_portuguese_citizen_card=bool(context.get('certificate_require_portuguese_citizen_card', False))
+data_exist_from_portuguese_citizen_card= not ( cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '' )
+
 # Build `body_text` variable
 body_text = ''
 body_text = append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
-if cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '':
+if not showing_data_from_portuguese_citizen_card:
   body_text = append_space(body_text, uppercase(accomplishment_copy_name))
 else:
   body_text = append_space(body_text, cc_first_name)
@@ -139,8 +142,48 @@ nau_course_certificate_data_dict = {
 import hashlib
 import json
 nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_data_dict, sort_keys=True).encode('utf-8')).hexdigest()
-
 %>
+
+<%
+# Show a message to associate portuguese citizen card if on the advanced settings > Certificate Web/HTML View Overrides 
+# the field 'certificate_require_portuguese_citizen_card' has the 'true' value.
+%>
+% if certificate_require_portuguese_citizen_card and ( not data_exist_from_portuguese_citizen_card ):
+<!DOCTYPE html>
+<html class="no-js" lang="${language}">
+  <head dir="${dir_rtl}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <title>${document_title}</title>
+  </head>
+  <body>
+    % if user_language == "pt-pt":
+    <p>
+      Para visualizar este certificado é necessário que o estudante associe o Cartão de Cidadão Português à sua conta NAU.
+    </p>
+    <p>
+      <a href="https://plataforma-nau.atlassian.net/wiki/spaces/PROD/pages/2042986497/Associar+Cart+o+de+Cidad+o+e+Chave+M+vel+Digital" target="_blank">
+        Ajuda para 
+        "Associar o Cartão de Cidadão e a Chave Móvel Digital"
+        à sua conta NAU.
+      </a>
+    % else:
+    <p>
+      To view this certificate, the student must link the Portuguese Citizen Card to their NAU account.
+      On this page you can get help on how to
+    </p>
+    <p>
+      <a href="https://plataforma-nau.atlassian.net/wiki/spaces/PROD/pages/2042986497/Associar+Cart+o+de+Cidad+o+e+Chave+M+vel+Digital" target="_blank">
+        Help on how to
+        "Associate the Portuguese Citizen Card"
+        to your NAU account.
+      </a>
+    </p>
+    % endif
+  </body>
+</html>
+% else:
+## Print the normal certificate
 <!DOCTYPE html>
 <html class="no-js" lang="${language}">
 <head dir="${dir_rtl}">
@@ -965,3 +1008,4 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
 
   </body>
 </html>
+% endif
