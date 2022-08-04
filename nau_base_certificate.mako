@@ -130,6 +130,9 @@ body_text = append_space(body_text, accomplishment_copy_description_full)
 body_text = append_space(body_text, accomplishment_copy_course_name)
 body_text = append_space(body_text, accomplishment_copy_course_description)
 
+# side message
+certificate_side_message = context.get('certificate_side_message', None)
+
 # footer note certification information message
 footer_note_certification_information_default = {
   "pt-pt": "A pessoa mencionada neste certificado completou todas as atividades relativas ao curso em questão. Para mais informações sobre Certificação na plataforma NAU e requisitos para a sua obtenção visite <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. Este certificado é uma prova de aprendizagem, não tendo qualquer validade formal como prova de qualificação ou como formação conferente de grau.",
@@ -566,6 +569,15 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         margin-top: 2px
     }
 
+    .ednxt-certificate__side_message {
+      position: absolute;
+      bottom: 4cm;
+      font-weight: 700;
+      font-size: 12px;
+      width: 7cm;
+      line-height: 1.5;
+    }
+
     .ednxt-certificate__footer-information_date,
     .ednxt-certificate__footer-information_id {
         width: 100%;
@@ -703,6 +715,9 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
     }
 
     @media all {
+      .ednxt-certificate__side_message {
+        color: ${context.get('certificate_side_message_color', context.get('footer_information_color', 'white'))};
+      }
       .ednxt-certificate__footer-information_date .title {
         color: ${context.get('footer_information_date_title_color', context.get('footer_information_color', 'white'))};
       }
@@ -968,6 +983,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
               % endif
 
               <img class="nau-logo-funders" src="${static.certificate_asset_url('3logos-financiadores-portugal-2020-compete-feder')}" alt="Logos das entidades financiadoras">
+
+              % if certificate_side_message:
+              <div class="ednxt-certificate__side_message">
+                  ${certificate_side_message}
+              </div>
+              % endif
+
               <div class="ednxt-certificate__footer-information">
                 <div class="ednxt-certificate__footer-information_logo">
                   <h3 class="sr-only">${_("Supported by the following organizations")}</h3>
