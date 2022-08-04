@@ -111,6 +111,15 @@ def append_space(current, in_str):
   else:
     return current + in_str
 
+# helper function to convert a possible string to a boolean
+def to_bool(value):
+  if type(value) is str:
+    return bool(distutils.util.strtobool(value))
+  if type(value) is bool:
+    return value
+  else:
+    return False
+
 certificate_require_portuguese_citizen_card=bool(context.get('certificate_require_portuguese_citizen_card', False))
 data_exist_from_portuguese_citizen_card= not ( cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '' )
 
@@ -964,17 +973,17 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
               % endif
 
               <img class="nau-logo" src="${static.certificate_asset_url('nau-logo-certificado')}" alt="Logo da Plataforma NAU - Sempre a Aprender">
-              % if bool(distutils.util.strtobool(context.get('add_course_image_left_panel', 'true'))):
+              % if to_bool(context.get('add_course_image_left_panel', 'true')):
                 <img class="course-image" src="${full_course_image_url}" alt="Imagem do curso">
               % endif
 
-              % if bool(distutils.util.strtobool(context.get('add_course_name_left_panel', 'true'))):
+              % if to_bool(context.get('add_course_name_left_panel', 'true')):
               <div class="left-panel-course-name">
                 ${accomplishment_copy_course_name}
               </div>
               % endif
 
-              % if bool(distutils.util.strtobool(context.get('add_organization_logo_to_header', 'true'))) and organization_logo_url:
+              % if to_bool(context.get('add_organization_logo_to_header', 'true')) and organization_logo_url:
                 <img class="organization-logo" src="${organization_logo_url}" alt="${organization_long_name}">
               % endif
               
