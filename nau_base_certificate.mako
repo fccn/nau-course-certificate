@@ -84,6 +84,8 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 # footer_information_id_value_color
 #    Change specific footer title or value of date or hash id color from white to other HTML color
 #
+# footer_note_certification_information
+#    Change the default NAU disclaimer message
 #
 # Option for development proposes (False for PROD and True during certificate development):
 nau_certificate_issued_display_iframe = False
@@ -128,6 +130,14 @@ body_text = append_space(body_text, accomplishment_copy_description_full)
 body_text = append_space(body_text, accomplishment_copy_course_name)
 body_text = append_space(body_text, accomplishment_copy_course_description)
 
+# footer note certification information message
+footer_note_certification_information_default = {
+  "pt-pt": "A pessoa mencionada neste certificado completou todas as atividades relativas ao curso em questão. Para mais informações sobre Certificação na plataforma NAU e requisitos para a sua obtenção visite <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. Este certificado é uma prova de aprendizagem, não tendo qualquer validade formal como prova de qualificação ou como formação conferente de grau.",
+  "en": "The person mentioned in this certificate has completed all course activities. For more information about Certification at NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. This certificate is an evidence of learning, and has no formal proof of qualification or as a degree that gives a level of education.",
+}
+footer_note_certification_information = context.get('footer_note_certification_information', footer_note_certification_information_default)
+if type(footer_note_certification_information) is dict:
+  footer_note_certification_information = footer_note_certification_information.get(language, footer_note_certification_information.get('pt-pt',''))
 
 # Generate a dict with all certificate parameters that students can change,
 # so if they change its `name` the print to PDF is forced to be regenerated.
@@ -136,6 +146,7 @@ nau_course_certificate_data_dict = {
   "language": language,
   "certificate_date_issued": certificate_date_issued,
   "body_text": body_text,
+  "footer_note_certification_information": footer_note_certification_information,
 }
 # Generate a hash of the dict. If the hash changes the print to PDF will
 # generate a new file.
@@ -974,13 +985,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
                 <a href="https://lms.nau.edu.pt/certificates/${certificate_id_number}">https://lms.nau.edu.pt/certificates/${certificate_id_number}</a>
               </div>
               <div class="ednxt-certificate__footer-certification-information">
-                <%
-                  certification_information = {
-                    "pt-pt": "A pessoa mencionada neste certificado completou todas as atividades relativas ao curso em questão. Para mais informações sobre Certificação na plataforma NAU e requisitos para a sua obtenção visite <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. Este certificado é uma prova de aprendizagem, não tendo qualquer validade formal como prova de qualificação ou como formação conferente de grau.",
-                    "en": "The person mentioned in this certificate has completed all course activities. For more information about Certification at NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. This certificate is an evidence of learning, and has no formal proof of qualification or as a degree that gives a level of education.",
-                  }
-                %>
-                ${certification_information.get(language, certification_information.get('pt-pt',''))}
+                ${footer_note_certification_information}
               </div>
             </div>
           </div>
