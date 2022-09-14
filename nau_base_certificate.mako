@@ -121,20 +121,21 @@ def to_bool(value):
     return False
 
 certificate_require_portuguese_citizen_card=bool(context.get('certificate_require_portuguese_citizen_card', False))
-data_exist_from_portuguese_citizen_card= not ( cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '' )
+data_exist_from_portuguese_citizen_card = not ( cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '' )
 
 # Build `body_text` variable
 body_text = ''
 body_text = append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
-if not showing_data_from_portuguese_citizen_card:
-  body_text = append_space(body_text, uppercase(accomplishment_copy_name))
-else:
+if data_exist_from_portuguese_citizen_card:
   body_text = append_space(body_text, cc_first_name)
   body_text = append_space(body_text, cc_last_name)
   body_text = append_space(body_text, ", com Cartão Cidadão número ")
   body_text = append_space(body_text, cc_nic)
   if cc_nic_check_digit is not None:
     body_text = append_space(body_text, cc_nic_check_digit)
+else:
+  body_text = append_space(body_text, uppercase(accomplishment_copy_name))
+
 body_text = append_space(body_text, accomplishment_copy_description_full)
 body_text = append_space(body_text, accomplishment_copy_course_name)
 body_text = append_space(body_text, accomplishment_copy_course_description)
