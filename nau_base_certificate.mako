@@ -255,10 +255,14 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
   
   <style>
     /* eduNEXT certificate template asset certificates_styles.css */
+    * {
+      box-sizing: border-box;
+    }
+
     .layout-accomplishment {
         min-width: 1024px;
         height: auto;
-        background: #eceff0
+        background: #eceff0;
     }
 
     .ednxt-certificate {
@@ -273,7 +277,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         background: #fff;
         border-radius: 3px;
         box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .2);
-        overflow: auto
+        overflow: auto;
     }
 
     .ednxt-certificate__vars {
@@ -285,17 +289,17 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         padding: 1em 1em 2.5em;
         line-height: 1.45;
         position: relative;
-        overflow-x: scroll
+        overflow-x: scroll;
     }
 
     .ednxt-certificate__vars::-moz-selection {
         color: #141e1e;
-        background: #dce6e6
+        background: #dce6e6;
     }
 
     .ednxt-certificate__vars::selection {
         color: #141e1e;
-        background: #dce6e6
+        background: #dce6e6;
     }
 
     .ednxt-certificate__header {
@@ -311,13 +315,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         width: 100%;
         float: left;
         padding-left: .625rem;
-        padding-right: .625rem
+        padding-right: .625rem;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__header {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -338,7 +342,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
     .ednxt-certificate__header-logo:last-child:not(:first-child),
     .ednxt-certificate__header-title:last-child:not(:first-child),
     .ednxt-certificate__header:last-child:not(:first-child) {
-        float: right
+        float: right;
     }
 
     .ednxt-certificate__header-title {
@@ -350,13 +354,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         font-size: 48px;
         font-weight: 300;
         line-height: 1.1;
-        text-transform: uppercase
+        text-transform: uppercase;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__header-title {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -364,13 +368,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         width: 50%;
         float: left;
         padding-left: .625rem;
-        padding-right: .625rem
+        padding-right: .625rem;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__header-logo {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -378,20 +382,20 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         float: right;
         transition: none;
         max-width: 100%;
-        border-bottom: 0
+        border-bottom: 0;
     }
 
     .ednxt-certificate__header-logo a:active,
     .ednxt-certificate__header-logo a:focus,
     .ednxt-certificate__header-logo a:hover {
-        border-bottom: 0
+        border-bottom: 0;
     }
 
     .ednxt-certificate__header-logo img {
         min-width: 64px;
         max-width: 100%;
         min-height: 64px;
-        max-height: 124px
+        max-height: 124px;
     }
 
     .ednxt-certificate__content {
@@ -400,13 +404,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         padding-left: .625rem;
         padding-right: .625rem;
         margin: 12px 0;
-        padding: 40px
+        padding: 40px;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__content {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -419,7 +423,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         float: left;
         padding-left: .625rem;
         padding-right: .625rem;
-        margin-bottom: 20px
+        margin-bottom: 20px;
     }
 
     @media screen and (min-width:40em) {
@@ -429,7 +433,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         .ednxt-certificate__content-recipient,
         .ednxt-certificate__content-summary {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -437,22 +441,22 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
     .ednxt-certificate__content-detail,
     .ednxt-certificate__content-summary {
         font-size: 18px;
-        line-height: 1.6
+        line-height: 1.6;
     }
 
     .ednxt-certificate__content-course,
     .ednxt-certificate__content-recipient {
         color: #000;
         font-weight: 600;
-        line-height: 1.2
+        line-height: 1.2;
     }
 
     .ednxt-certificate__content-recipient {
-        font-size: 40px
+        font-size: 40px;
     }
 
     .ednxt-certificate__content-course {
-        font-size: 28px
+        font-size: 28px;
     }
 
     .ednxt-certificate__footer {
@@ -471,13 +475,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         padding-right: .625rem;
         -webkit-flex-wrap: wrap;
         -ms-flex-wrap: wrap;
-        flex-wrap: wrap
+        flex-wrap: wrap;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -485,13 +489,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         width: 66.66667%;
         float: left;
         padding-left: .625rem;
-        padding-right: .625rem
+        padding-right: .625rem;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer-signatures {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -500,13 +504,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         float: left;
         padding-left: .625rem;
         padding-right: .625rem;
-        text-align: center
+        text-align: center;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer-signatories {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -516,7 +520,8 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         vertical-align: middle;
         width: 32%;
         padding-left: .9375rem;
-        padding-right: .9375rem
+        padding-right: .9375rem;
+        box-sizing: border-box;
     }
 
     .ednxt-certificate__footer-signatory_signature {
@@ -531,12 +536,12 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         margin-bottom: .3125rem;
         font-size: .875rem;
         font-weight: 600;
-        line-height: 1.6
+        line-height: 1.6;
     }
 
     .ednxt-certificate__footer-signatory_credentials {
         font-size: .75rem;
-        line-height: 1.5
+        line-height: 1.5;
     }
 
     .ednxt-certificate__footer-signatory_credentials .role {
@@ -546,20 +551,20 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
     .ednxt-certificate__footer-signatory_credentials .organization {
         display: block;
         margin-top: .3125rem;
-        font-style: italic
+        font-style: italic;
     }
 
     .ednxt-certificate__footer-information {
         width: 33.33333%;
         float: left;
         padding-left: .625rem;
-        padding-right: .625rem
+        padding-right: .625rem;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer-information {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -568,20 +573,20 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         float: left;
         padding-left: .625rem;
         padding-right: .625rem;
-        margin-bottom: 16px
+        margin-bottom: 16px;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer-information_logo {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
     .ednxt-certificate__footer-information_logo img {
         float: right;
         max-width: 124px;
-        margin-top: 2px
+        margin-top: 2px;
     }
 
     .ednxt-certificate__side_message {
@@ -600,14 +605,14 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         padding-left: .625rem;
         padding-right: .625rem;
         margin-bottom: 10px;
-        text-align: right
+        text-align: right;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer-information_date,
         .ednxt-certificate__footer-information_id {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -616,7 +621,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         display: block;
         margin-bottom: 0;
         font-size: 12px;
-        font-weight: 600
+        font-weight: 600;
     }
 
     .ednxt-certificate__footer-information_date .title,
@@ -624,13 +629,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         color: #a7a4a4;
         text-transform: uppercase;
         line-height: 1.5;
-        letter-spacing: .03125rem
+        letter-spacing: .03125rem;
     }
 
     .ednxt-certificate__footer-information_date .value,
     .ednxt-certificate__footer-information_id .value {
         color: #6b6969;
-        font-weight: 700
+        font-weight: 700;
     }
 
     .ednxt-certificate__footer-link {
@@ -645,13 +650,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         display: none;
         margin-top: 16px;
         text-align: center;
-        font-size: 12px
+        font-size: 12px;
     }
 
     @media screen and (min-width:40em) {
         .ednxt-certificate__footer-link {
             padding-left: .9375rem;
-            padding-right: .9375rem
+            padding-right: .9375rem;
         }
     }
 
@@ -662,29 +667,29 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         .ednxt-certificate {
             margin-bottom: 0;
             padding: 1px 10px;
-            box-shadow: none
+            box-shadow: none;
         }
         .ednxt-certificate__header-title {
             width: 50%;
-            font-size: 32px
+            font-size: 32px;
         }
         .ednxt-certificate__header__header-logo img {
-            max-height: 86px
+            max-height: 86px;
         }
         .ednxt-certificate__content {
-            padding: 16px
+            padding: 16px;
         }
         .ednxt-certificate__content-recipient {
-            font-size: 36px
+            font-size: 36px;
         }
         .ednxt-certificate__content-course {
-            font-size: 26px
+            font-size: 26px;
         }
         .ednxt-certificate__footer-information_logo img {
-            max-width: 124px!important
+            max-width: 124px!important;
         }
         .ednxt-certificate__footer-link {
-            display: block
+            display: block;
         }
     }
 
@@ -805,7 +810,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         max-width: 29cm;
       }
       .financiers-footer-logo {
-        max-width: 12cm;
+        max-width: 12cm !important;
         max-height: 2.7cm;
         position: absolute;
         left: 9.8cm;
@@ -901,7 +906,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         max-width: ${context.get('organization_logo_max_width', '13cm')};
       }
       .footer-additional-logo {
-        max-width: 18cm;
+        max-width: 18cm !important;
         position: absolute;
         left: 9.8cm;
         bottom: 3.3cm;
