@@ -84,6 +84,11 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 # footer_information_id_value_color
 #    Change specific footer title or value of date or hash id color from white to other HTML color
 #
+# footer_financiers_asset_logo
+#    Change the financiers logo that is shown at the bottom of the certificate, to other certificate asset.
+#    For some 1st financed courses use '3logos-financiadores-portugal-2020-compete-feder', the new
+#    courses don't configure and use the NAU platform default.
+#
 # footer_note_certification_information
 #    Change the default NAU disclaimer message
 #
@@ -799,8 +804,9 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         min-width: 29cm;
         max-width: 29cm;
       }
-      .nau-logo-funders {
-        max-width: 9cm !important;
+      .financiers-footer-logo {
+        max-width: 12cm;
+        max-height: 2.7cm;
         position: absolute;
         left: 9.8cm;
         bottom: 1.5cm;
@@ -895,10 +901,10 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         max-width: ${context.get('organization_logo_max_width', '13cm')};
       }
       .footer-additional-logo {
-        max-width: 18cm !important;
+        max-width: 18cm;
         position: absolute;
         left: 9.8cm;
-        bottom: 3cm;
+        bottom: 3.3cm;
         max-height: 2.7cm;
       }
       .wrapper-banner-user {
@@ -992,7 +998,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
                 <img class="footer-additional-logo" src="${footer_additional_logo}">
               % endif
 
-              <img class="nau-logo-funders" src="${static.certificate_asset_url('3logos-financiadores-portugal-2020-compete-feder')}" alt="Logos das entidades financiadoras">
+              <img class="financiers-footer-logo" src="${static.certificate_asset_url(context.get('footer_financiers_asset_logo', 'compete-portugal2020-fse'))}" alt="Logos das entidades financiadoras">
 
               % if certificate_side_message:
               <div class="ednxt-certificate__side_message">
