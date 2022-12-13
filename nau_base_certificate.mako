@@ -92,6 +92,17 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 # footer_note_certification_information
 #    Change the default NAU disclaimer message
 #
+# certificate_side_message
+#    HTML content to be used on left side of the certificate, bellow the course image.
+# 
+# certificate_side_message_color
+#    Color of certificate side message, to be used if the background of certificate has different colors.
+#
+# supplement
+#    List of content for each additional page.
+#    Content of the HTML diploma supplement to be included on the second page of the certificate.
+#    It should not include any specific style. It should only include h2, h3, p, ul, ol, li.
+#
 # Option for development proposes (False for PROD and True during certificate development):
 nau_certificate_issued_display_iframe = False
 default_organization_logo_url = ( 'https://' + ( request.get_host().replace('lms.','uploads.static.') if 'fccn.pt' in request.get_host() else 'uploads.static.prod.nau.fccn.pt' ) + '/' + str(organization_logo) ) if len(str(organization_logo))>0 else None
@@ -148,6 +159,9 @@ body_text = append_space(body_text, accomplishment_copy_course_description)
 # side message
 certificate_side_message = context.get('certificate_side_message', None)
 
+# supplement information for the 2nd page of the certificate
+supplement = context.get('supplement', None)
+
 # footer note certification information message
 footer_note_certification_information_default = {
   "pt-pt": "A pessoa mencionada neste certificado completou todas as atividades relativas ao curso em questão. Para mais informações sobre Certificação na plataforma NAU e requisitos para a sua obtenção visite <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. Este certificado é uma prova de aprendizagem, não tendo qualquer validade formal como prova de qualificação ou como formação conferente de grau.",
@@ -166,6 +180,16 @@ nau_course_certificate_data_dict = {
   "body_text": body_text,
   "footer_note_certification_information": footer_note_certification_information,
 }
+if supplement:
+  nau_course_certificate_data_dict.update({"supplement": supplement})
+
+# number of pages to print
+number_of_pages = 1
+if supplement:
+  number_of_pages = 2
+if supplement and type(supplement) is list:
+  number_of_pages = len(supplement) + 1
+
 # Generate a hash of the dict. If the hash changes the print to PDF will
 # generate a new file.
 import hashlib
@@ -233,7 +257,9 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
   <meta name="pdfkit-margin-bottom" content="0mm" />
   <meta name="pdfkit-margin-top" content="0mm" />
   ## To fix the PDF printing weren't being printed too small.
-  <meta name="pdfkit-zoom" content="2" />
+  ## <meta name="pdfkit-zoom" content="2" />
+  <meta name="pdfkit-disable-smart-shrinking" content="" />
+  
   ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
@@ -248,7 +274,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
   ## The filename when downloading the PDF of an issued certificate.
   <meta name="nau-course-certificate-filename" content="certificado-nau-curso-${certificate_id_number}.pdf">
   ## To limit the number of pages that the PDF have.
-  <meta name="nau-course-certificate-limit-pages" content="1">
+  ## <meta name="nau-course-certificate-limit-pages" content="${number_of_pages}">
 
   <title>${document_title}</title>
   <%static:css group='style-certificates'/>
@@ -771,7 +797,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
       .ednxt-certificate__footer-link {
           position: absolute;
           bottom: 15.5cm;
-          left: 22cm;
+          left: 22.3cm;
           width: 500px;
           display: block;
           margin-top: 0px;
@@ -799,15 +825,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         position: absolute;
         top: 0cm;
         left: 0cm;
-        width: 29cm;
+        width: 29.7cm;
         height: 21cm;
         z-index: 0;
       }
       .ednxt-certificate {
-        min-height: 21cm;
-        max-height: 21cm;
-        min-width: 29cm;
-        max-width: 29cm;
+        height: 21cm;
+        width: 29.7cm;
       }
       .financiers-footer-logo {
         max-width: 12cm !important;
@@ -819,7 +843,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
       .nau-logo {
         max-height: 2cm;
         position: absolute;
-        right: 0.7cm;
+        right: 1.5cm;
         top: 1cm;
       }
       .cert-footer-rp {
@@ -914,6 +938,18 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
       }
       .wrapper-banner-user {
         margin-top: 0px;
+      }
+      .supplement {
+        font-size: 0.7rem;
+        padding-right: 0.5cm;
+        padding-left: 0.5cm;
+      }
+      .supplement-footer {
+        font-size: 0.7rem;
+        position: absolute;
+        bottom: 0.5cm;
+        padding-right: 0.5cm;
+        padding-left: 0.5cm;
       }
     }
   </style>
@@ -1032,6 +1068,18 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
               </div>
             </div>
           </div>
+          % if type(supplement) is list:
+            % for s in supplement:
+            <div class="ednxt-certificate">
+              <div class="supplement">
+                ${s}
+              </div>
+              <div class="supplement-footer">
+                ${_("Page")} ${loop.index +2} ${_("of")} ${number_of_pages}
+              </div>
+            </div>
+            % endfor
+          % endif
         </div>
       % endif
       <div class="wrapper-about"></div>
