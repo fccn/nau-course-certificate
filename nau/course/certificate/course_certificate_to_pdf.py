@@ -172,7 +172,7 @@ class CourseCertificateToBase(ABC):
         Returns:
             bytes: The PDF certiticate on S3 bucket
         """
-        s3_client = boto3.client('s3', use_ssl=False, aws_access_key_id=aws_access_key_id,
+        s3_client = boto3.client('s3', aws_access_key_id=aws_access_key_id,
                                  aws_secret_access_key=aws_secret_access_key, endpoint_url=endpoint_url)
         try:
             s3_response_object = s3_client.get_object(
@@ -192,7 +192,7 @@ class CourseCertificateToBase(ABC):
 
     @staticmethod
     def save_certificate_on_s3_bucket(bucket_name, endpoint_url, aws_access_key_id, aws_secret_access_key, certificate_s3_key, binary):
-        s3_client = boto3.client('s3', use_ssl=False, aws_access_key_id=aws_access_key_id,
+        s3_client = boto3.client('s3', aws_access_key_id=aws_access_key_id,
                                  aws_secret_access_key=aws_secret_access_key, endpoint_url=endpoint_url)
         s3_client.put_object(
             Body=binary, Bucket=bucket_name, Key=certificate_s3_key)
