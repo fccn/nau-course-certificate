@@ -137,7 +137,11 @@ def to_bool(value):
     return False
 
 certificate_require_portuguese_citizen_card=bool(context.get('certificate_require_portuguese_citizen_card', False))
-data_exist_from_portuguese_citizen_card = not ( cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' or cc_nic is None or cc_nic == '' )
+name_exist_from_portuguese_citizen_card = not ( cc_first_name is None or cc_first_name == '' or cc_last_name is None or cc_last_name == '' )
+nic_exist_from_portuguese_citizen_card = not ( cc_nic is None or cc_nic == '' )
+nif_exist_from_portuguese_citizen_card = not ( cc_nif is None or cc_nif == '' )
+
+data_exist_from_portuguese_citizen_card = name_exist_from_portuguese_citizen_card and (nic_exist_from_portuguese_citizen_card or nif_exist_from_portuguese_citizen_card)
 
 # Build `body_text` variable
 body_text = ''
@@ -145,8 +149,12 @@ body_text = append_space(body_text, context.get('certificate_description', 'Cert
 if data_exist_from_portuguese_citizen_card:
   body_text = append_space(body_text, cc_first_name)
   body_text = append_space(body_text, cc_last_name)
-  body_text = append_space(body_text, ", com Cartão Cidadão número ")
-  body_text = append_space(body_text, cc_nic)
+  if nic_exist_from_portuguese_citizen_card:
+    body_text = append_space(body_text, ", com Cartão Cidadão número ")
+    body_text = append_space(body_text, cc_nic)
+  elif nif_exist_from_portuguese_citizen_card:
+    body_text = append_space(body_text, ", com Número de Identificação Fiscal ")
+    body_text = append_space(body_text, cc_nif)
   if cc_nic_check_digit is not None:
     body_text = append_space(body_text, cc_nic_check_digit)
 else:
