@@ -120,9 +120,11 @@ def cleanhtml(raw_html):
 
 # If need append a space when joining the `current` and the `in_str`
 def append_space(current, in_str):
-  current_ends_with_text=bool(re.search("[a-zA-Z0-9]$", cleanhtml(current)))
-  in_str_starts_with_text=bool(re.search("^[a-zA-Z0-9]", cleanhtml(in_str)))
-  if current_ends_with_text and in_str_starts_with_text:
+  current_cleaned = cleanhtml(current)
+  in_str_cleaned = cleanhtml(in_str)
+  current_ends_with_alpha=len(current_cleaned) > 0 and current_cleaned[-1].isalpha()
+  in_str_starts_with_alpha=len(in_str_cleaned) > 0 and in_str_cleaned[0].isalpha()
+  if current_ends_with_alpha and in_str_starts_with_alpha:
     return current + ' ' + in_str
   else:
     return current + in_str
