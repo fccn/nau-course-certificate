@@ -10,3 +10,6 @@ PyPDF2==1.28.6
 endesive==2.0.13
 pyOpenSSL==22.1.0
 cryptography==38.0.4
+# Flask doesn't specify the dependency correctly, the new version of Werkzeug 
+# isn't compatible with older version of Flask
+Werkzeug==2.2.2
