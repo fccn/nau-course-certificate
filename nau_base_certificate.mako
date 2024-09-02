@@ -1049,7 +1049,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
                 <img class="footer-additional-logo" src="${footer_additional_logo}">
               % endif
 
-              <img class="financiers-footer-logo" src="${static.certificate_asset_url(context.get('footer_financiers_asset_logo', 'compete-portugal2020-fse'))}" alt="Logos das entidades financiadoras">
+              <img class="financiers-footer-logo" src="${static.certificate_asset_url(context.get('footer_financiers_asset_logo', 'nau-prr-logos-2024'))}" alt="Logos das entidades financiadoras">
 
               % if certificate_side_message:
               <div class="ednxt-certificate__side_message">
