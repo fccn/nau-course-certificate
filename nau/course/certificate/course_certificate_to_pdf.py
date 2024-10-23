@@ -36,7 +36,7 @@ class CourseCertificateToBase(ABC):
 
         # https://www.digitalocean.com/community/tutorials/how-to-use-logging-in-python-3
         # https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
-        logging.config.dictConfig(self._config.get('LOGGING'))
+        logging.config.dictConfig(self._config.get('LOGGING', Configuration('default-config.yml').config().get('LOGGING')))
 
         self._path = path
         # parse query string to a dict where its value is a list.
