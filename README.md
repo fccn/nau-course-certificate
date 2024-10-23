@@ -5,6 +5,9 @@ This should be installed as a docker container.
 
 For development proposes you can run using flask (recomended), uwsgi or uwsgi inside of a docker container.
 
+## Python
+Tested using the Python version `3.11.8`.
+
 ## Virtual environment
 
 ```bash
