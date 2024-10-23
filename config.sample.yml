@@ -1,20 +1,4 @@
-HTTP_HEADER_NAME: X-NAU-Certificate-force-html
-HTTP_HEADER_VALUE: true
 LMS_SERVER_URL: https://lms.ENV.nau.fccn.pt
-CERTIFICATE_FILE_NAME: certificate.pdf
-CERTIFICATE_IMAGE_FILE_NAME: certificate
-HTTP_HEADER_META_PREFIX: pdfkit-
-HTTP_HEADER_META_IMAGE_PREFIX: imgkit-
-HTTP_HEADER_META_IMAGE_FORMAT: imgkit-format
-HTTP_HEADER_META_VERSION_NAME: nau-course-certificate-version
-HTTP_HEADER_META_FILENAME_NAME: nau-course-certificate-filename
-HTTP_HEADER_META_IMAGE_FILENAME_NAME: nau-course-certificate-image-filename
-HTTP_HEADER_META_LIMIT_NUMBER_PAGES: nau-course-certificate-limit-pages
-BUCKET_NAME: nau-ENV-certificates
-BUCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
-BUCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-BUCKET_ENDPOINT_URL: http://rgw.nau.fccn.pt
-BUCKET_CERTIFICATE_NO_VERSION_KEY: no-version
 DIGITAL_SIGNATURE:
   CERTIFICATE_P12_PATH: ./digital_signature_dev/sign-pdf.dev.nau.fccn.pt.p12
   CERTIFICATE_P12_PASSWORD: "1234"
@@ -25,21 +9,37 @@ DIGITAL_SIGNATURE:
   reason: 
     pt-pt: Certificado de curso assinado digitalmente por NAU
     en: Digitally signed course certificate by NAU
-LOGGING: 
-  version: 1
-  disable_existing_loggers: False
-  root:
-    level: INFO
-    handlers: [console]
-  formatters:
-    standard:
-      datefmt: "%Y-%m-%d %H:%M:%S"
-      format: "%(asctime)s %(levelname)-10s %(message)s"
-    error:
-      format: "%(levelname)s <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s"
-  handlers:
-    console:
-      class: logging.StreamHandler
-      level: DEBUG
-      stream: ext://sys.stdout
-      formatter: standard
+# BUCKET_NAME: nau-ENV-certificates
+# BUCKET_AWS_ACCESS_KEY_ID: xxxxxxxxxxxxxxxxxxxx
+# BUCKET_AWS_SECRET_ACCESS_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+# BUCKET_ENDPOINT_URL: http://rgw.nau.fccn.pt
+# BUCKET_CERTIFICATE_NO_VERSION_KEY: no-version
+# CERTIFICATE_FILE_NAME: certificate.pdf
+# CERTIFICATE_IMAGE_FILE_NAME: certificate
+# HTTP_HEADER_NAME: X-NAU-Certificate-force-html
+# HTTP_HEADER_VALUE: true
+# HTTP_HEADER_META_PREFIX: pdfkit-
+# HTTP_HEADER_META_IMAGE_PREFIX: imgkit-
+# HTTP_HEADER_META_IMAGE_FORMAT: imgkit-format
+# HTTP_HEADER_META_VERSION_NAME: nau-course-certificate-version
+# HTTP_HEADER_META_FILENAME_NAME: nau-course-certificate-filename
+# HTTP_HEADER_META_IMAGE_FILENAME_NAME: nau-course-certificate-image-filename
+# HTTP_HEADER_META_LIMIT_NUMBER_PAGES: nau-course-certificate-limit-pages
+# LOGGING: 
+#   version: 1
+#   disable_existing_loggers: False
+#   root:
+#     level: INFO
+#     handlers: [console]
+#   formatters:
+#     standard:
+#       datefmt: "%Y-%m-%d %H:%M:%S"
+#       format: "%(asctime)s %(levelname)-10s %(message)s"
+#     error:
+#       format: "%(levelname)s <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s"
+#   handlers:
+#     console:
+#       class: logging.StreamHandler
+#       level: DEBUG
+#       stream: ext://sys.stdout
+#       formatter: standard

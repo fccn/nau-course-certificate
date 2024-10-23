@@ -103,13 +103,13 @@ class CourseCertificateToBase(ABC):
         raise NotImplementedError("To be redefined in subclasses")
 
     def http_header_name(self):
-        return self._config['HTTP_HEADER_NAME']
+        return self._config.get('HTTP_HEADER_NAME', 'X-NAU-Certificate-force-html')
 
     def http_header_meta_prefix(self):
-        return self._config['HTTP_HEADER_META_PREFIX']
+        return self._config.get('HTTP_HEADER_META_PREFIX', 'pdfkit-')
 
     def http_header_value(self):
-        return str(self._config['HTTP_HEADER_VALUE'])
+        return str(self._config.get('HTTP_HEADER_VALUE', True))
 
     def cache_to_bucket(self):
         return self.bucket_name() and self.aws_access_key_id() and self.aws_secret_access_key()
@@ -127,16 +127,16 @@ class CourseCertificateToBase(ABC):
         return self._config.get('BUCKET_ENDPOINT_URL')
 
     def http_header_meta_version_name(self):
-        return self._config['HTTP_HEADER_META_VERSION_NAME']
+        return self._config.get('HTTP_HEADER_META_VERSION_NAME', 'nau-course-certificate-version')
 
     def http_header_meta_filename_name(self):
-        return self._config['HTTP_HEADER_META_FILENAME_NAME']
+        return self._config.get('HTTP_HEADER_META_FILENAME_NAME', 'nau-course-certificate-filename')
 
     def http_header_meta_limit_number_pages(self):
-        return self._config.get('HTTP_HEADER_META_LIMIT_NUMBER_PAGES', None)
+        return self._config.get('HTTP_HEADER_META_LIMIT_NUMBER_PAGES', 'nau-course-certificate-limit-pages')
 
     def bucket_no_version(self):
-        return self._config['BUCKET_CERTIFICATE_NO_VERSION_KEY']
+        return self._config.get('BUCKET_CERTIFICATE_NO_VERSION_KEY', 'no-version')
 
     def lms_servers_auth_user(self):
         return self._config.get('LMS_SERVER_AUTH_USER', None)
@@ -145,10 +145,10 @@ class CourseCertificateToBase(ABC):
         return self._config.get('LMS_SERVER_AUTH_PASS', None)
 
     def http_header_meta_image_filename_name(self):
-        return self._config['HTTP_HEADER_META_IMAGE_FILENAME_NAME']
+        return self._config.get('HTTP_HEADER_META_IMAGE_FILENAME_NAME', 'nau-course-certificate-image-filename')
 
     def http_header_meta_image_prefix(self):
-        return self._config['HTTP_HEADER_META_IMAGE_PREFIX']
+        return self._config.get('HTTP_HEADER_META_IMAGE_PREFIX', 'imgkit-')
 
     def http_header_meta_image_format(self):
         return self._config.get('HTTP_HEADER_META_IMAGE_FORMAT', 'imgkit-format')
@@ -262,7 +262,7 @@ class CourseCertificateToPDF(CourseCertificateToBase):
     def get_filename(self):
         filename = self._get_certificate_http_meta(
             self.http_header_meta_filename_name())
-        return filename if filename is not None else self._config['CERTIFICATE_FILE_NAME']
+        return filename if filename is not None else self._config.get('CERTIFICATE_FILE_NAME', 'certificate.pdf')
 
     def s3_suffix(self):
         return ".pdf"
