@@ -65,28 +65,31 @@ class CourseCertificateToBase(ABC):
         '''
         logger.info(
             "Converting html certificate to PDF with URL: {}".format(self._url))
-
-        certificate_version = self._get_certificate_http_meta(
-            self.http_header_meta_version_name())
-        logger.info("certificate_version: {}".format(certificate_version))
-        s3_bucket_certificate_key = self._path + '/' + \
-            (certificate_version if certificate_version else self.bucket_no_version()).replace(
-                ' ', '_') + self.s3_suffix()
-
+        
         binary_output = None
-        if (self._certificate_id is not None):
-            binary_output = self.get_certificate_on_s3_bucket(
-                self.bucket_name(),
-                self.bucket_endpoint_url(),
-                self.aws_access_key_id(),
-                self.aws_secret_access_key(),
-                s3_bucket_certificate_key
-            )
+        if self.cache_to_bucket():
+            certificate_version = self._get_certificate_http_meta(
+                self.http_header_meta_version_name())
+            logger.info("certificate_version: {}".format(certificate_version))
+            s3_bucket_certificate_key = self._path + '/' + \
+                (certificate_version if certificate_version else self.bucket_no_version()).replace(
+                    ' ', '_') + self.s3_suffix()
+
+            if (self._certificate_id is not None):
+                binary_output = self.get_certificate_on_s3_bucket(
+                    self.bucket_name(),
+                    self.bucket_endpoint_url(),
+                    self.aws_access_key_id(),
+                    self.aws_secret_access_key(),
+                    s3_bucket_certificate_key
+                )
+        else:
+            logger.warning("No caching on buckets configured")
 
         if (binary_output is None):
             binary_output = self.generate_new_certificate_to_dest_format()
 
-        if (self._certificate_id is not None):
+        if self.cache_to_bucket() and self._certificate_id is not None:
             self.save_certificate(s3_bucket_certificate_key, binary_output)
 
         return binary_output
@@ -108,17 +111,20 @@ class CourseCertificateToBase(ABC):
     def http_header_value(self):
         return str(self._config['HTTP_HEADER_VALUE'])
 
+    def cache_to_bucket(self):
+        return self.bucket_name() and self.aws_access_key_id() and self.aws_secret_access_key()
+
     def bucket_name(self):
-        return self._config['BUCKET_NAME']
+        return self._config.get('BUCKET_NAME')
 
     def aws_access_key_id(self):
-        return self._config['BUCKET_AWS_ACCESS_KEY_ID']
+        return self._config.get('BUCKET_AWS_ACCESS_KEY_ID')
 
     def aws_secret_access_key(self):
-        return self._config['BUCKET_AWS_SECRET_ACCESS_KEY']
+        return self._config.get('BUCKET_AWS_SECRET_ACCESS_KEY')
 
     def bucket_endpoint_url(self):
-        return self._config['BUCKET_ENDPOINT_URL']
+        return self._config.get('BUCKET_ENDPOINT_URL')
 
     def http_header_meta_version_name(self):
         return self._config['HTTP_HEADER_META_VERSION_NAME']
