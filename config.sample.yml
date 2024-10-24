@@ -1,4 +1,6 @@
+# Or alternatively use `OPENEDX_LMS_URL` configuration or `OPENEDX_LMS_URL` environment variable
 LMS_SERVER_URL: https://lms.ENV.nau.fccn.pt
+
 DIGITAL_SIGNATURE:
   CERTIFICATE_P12_PATH: ./digital_signature_dev/sign-pdf.dev.nau.fccn.pt.p12
   CERTIFICATE_P12_PASSWORD: "1234"

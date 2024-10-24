@@ -13,6 +13,7 @@ from nau.course.certificate.configuration import Configuration
 from nau.course.certificate.cut_pdf import cut_pdf_limit_pages
 from requests.auth import HTTPBasicAuth
 from nau.course.certificate.digital_sign_pdf import digital_sign_pdf
+import os
 
 from urllib.parse import parse_qs
 
@@ -47,7 +48,9 @@ class CourseCertificateToBase(ABC):
         self._language = language_query_values[0] if language_query_values else None
 
         # https://lms.dev.nau.fccn.pt
-        lms_server_url = self._config['LMS_SERVER_URL']
+        lms_server_url = self._config.get('LMS_SERVER_URL', self._config.get('OPENEDX_LMS_URL', os.getenv('OPENEDX_LMS_URL')))
+        if not lms_server_url:
+            raise Exception("Bad configuration, configure `LMS_SERVER_URL` or `OPENEDX_LMS_URL` on the config.yml or alternatively `OPENEDX_LMS_URL` environment variable.")
         self._url = lms_server_url + '/' + path
         if query_string and len(query_string) > 0:
             self._url += "?" + query_string.decode('ascii')

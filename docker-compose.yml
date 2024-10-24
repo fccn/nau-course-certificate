@@ -10,4 +10,5 @@ services:
       - ./digital_signature_dev:/app/digital_signature_dev
     ports:
       - "5000:5000"
-
+    environment:
+      - OPENEDX_LMS_URL=https://lms.dev.nau.fccn.pt
