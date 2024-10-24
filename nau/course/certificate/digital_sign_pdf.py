@@ -45,7 +45,7 @@ def digital_sign_pdf(pdf_data_in: bytes, config : dict, language : str) -> bytes
         if type(config) is dict:
             by_lang = config.get(language)
             if type(by_lang) is not str:
-                logger.warn("Incorrect configuration on the digital signature configuration")
+                logger.warning("Incorrect configuration on the digital signature configuration for '%s' on language '%s'", config, language)
                 return default_value
             return by_lang
         return default_value

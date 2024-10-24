@@ -13,6 +13,7 @@ from nau.course.certificate.configuration import Configuration
 from nau.course.certificate.cut_pdf import cut_pdf_limit_pages
 from requests.auth import HTTPBasicAuth
 from nau.course.certificate.digital_sign_pdf import digital_sign_pdf
+import os
 
 from urllib.parse import parse_qs
 
@@ -36,7 +37,7 @@ class CourseCertificateToBase(ABC):
 
         # https://www.digitalocean.com/community/tutorials/how-to-use-logging-in-python-3
         # https://docs.python.org/3/library/logging.config.html#logging-config-dictschema
-        logging.config.dictConfig(self._config.get('LOGGING'))
+        logging.config.dictConfig(self._config.get('LOGGING', Configuration('default-config.yml').config().get('LOGGING')))
 
         self._path = path
         # parse query string to a dict where its value is a list.
@@ -47,7 +48,9 @@ class CourseCertificateToBase(ABC):
         self._language = language_query_values[0] if language_query_values else None
 
         # https://lms.dev.nau.fccn.pt
-        lms_server_url = self._config['LMS_SERVER_URL']
+        lms_server_url = self._config.get('LMS_SERVER_URL', self._config.get('OPENEDX_LMS_URL', os.getenv('OPENEDX_LMS_URL')))
+        if not lms_server_url:
+            raise Exception("Bad configuration, configure `LMS_SERVER_URL` or `OPENEDX_LMS_URL` on the config.yml or alternatively `OPENEDX_LMS_URL` environment variable.")
         self._url = lms_server_url + '/' + path
         if query_string and len(query_string) > 0:
             self._url += "?" + query_string.decode('ascii')
@@ -65,28 +68,31 @@ class CourseCertificateToBase(ABC):
         '''
         logger.info(
             "Converting html certificate to PDF with URL: {}".format(self._url))
-
-        certificate_version = self._get_certificate_http_meta(
-            self.http_header_meta_version_name())
-        logger.info("certificate_version: {}".format(certificate_version))
-        s3_bucket_certificate_key = self._path + '/' + \
-            (certificate_version if certificate_version else self.bucket_no_version()).replace(
-                ' ', '_') + self.s3_suffix()
-
+        
         binary_output = None
-        if (self._certificate_id is not None):
-            binary_output = self.get_certificate_on_s3_bucket(
-                self.bucket_name(),
-                self.bucket_endpoint_url(),
-                self.aws_access_key_id(),
-                self.aws_secret_access_key(),
-                s3_bucket_certificate_key
-            )
+        if self.cache_to_bucket():
+            certificate_version = self._get_certificate_http_meta(
+                self.http_header_meta_version_name())
+            logger.info("certificate_version: {}".format(certificate_version))
+            s3_bucket_certificate_key = self._path + '/' + \
+                (certificate_version if certificate_version else self.bucket_no_version()).replace(
+                    ' ', '_') + self.s3_suffix()
+
+            if (self._certificate_id is not None):
+                binary_output = self.get_certificate_on_s3_bucket(
+                    self.bucket_name(),
+                    self.bucket_endpoint_url(),
+                    self.aws_access_key_id(),
+                    self.aws_secret_access_key(),
+                    s3_bucket_certificate_key
+                )
+        else:
+            logger.warning("No caching on buckets configured")
 
         if (binary_output is None):
             binary_output = self.generate_new_certificate_to_dest_format()
 
-        if (self._certificate_id is not None):
+        if self.cache_to_bucket() and self._certificate_id is not None:
             self.save_certificate(s3_bucket_certificate_key, binary_output)
 
         return binary_output
@@ -100,37 +106,40 @@ class CourseCertificateToBase(ABC):
         raise NotImplementedError("To be redefined in subclasses")
 
     def http_header_name(self):
-        return self._config['HTTP_HEADER_NAME']
+        return self._config.get('HTTP_HEADER_NAME', 'X-NAU-Certificate-force-html')
 
     def http_header_meta_prefix(self):
-        return self._config['HTTP_HEADER_META_PREFIX']
+        return self._config.get('HTTP_HEADER_META_PREFIX', 'pdfkit-')
 
     def http_header_value(self):
-        return str(self._config['HTTP_HEADER_VALUE'])
+        return str(self._config.get('HTTP_HEADER_VALUE', True))
+
+    def cache_to_bucket(self):
+        return self.bucket_name() and self.aws_access_key_id() and self.aws_secret_access_key()
 
     def bucket_name(self):
-        return self._config['BUCKET_NAME']
+        return self._config.get('BUCKET_NAME')
 
     def aws_access_key_id(self):
-        return self._config['BUCKET_AWS_ACCESS_KEY_ID']
+        return self._config.get('BUCKET_AWS_ACCESS_KEY_ID')
 
     def aws_secret_access_key(self):
-        return self._config['BUCKET_AWS_SECRET_ACCESS_KEY']
+        return self._config.get('BUCKET_AWS_SECRET_ACCESS_KEY')
 
     def bucket_endpoint_url(self):
-        return self._config['BUCKET_ENDPOINT_URL']
+        return self._config.get('BUCKET_ENDPOINT_URL')
 
     def http_header_meta_version_name(self):
-        return self._config['HTTP_HEADER_META_VERSION_NAME']
+        return self._config.get('HTTP_HEADER_META_VERSION_NAME', 'nau-course-certificate-version')
 
     def http_header_meta_filename_name(self):
-        return self._config['HTTP_HEADER_META_FILENAME_NAME']
+        return self._config.get('HTTP_HEADER_META_FILENAME_NAME', 'nau-course-certificate-filename')
 
     def http_header_meta_limit_number_pages(self):
-        return self._config.get('HTTP_HEADER_META_LIMIT_NUMBER_PAGES', None)
+        return self._config.get('HTTP_HEADER_META_LIMIT_NUMBER_PAGES', 'nau-course-certificate-limit-pages')
 
     def bucket_no_version(self):
-        return self._config['BUCKET_CERTIFICATE_NO_VERSION_KEY']
+        return self._config.get('BUCKET_CERTIFICATE_NO_VERSION_KEY', 'no-version')
 
     def lms_servers_auth_user(self):
         return self._config.get('LMS_SERVER_AUTH_USER', None)
@@ -139,10 +148,10 @@ class CourseCertificateToBase(ABC):
         return self._config.get('LMS_SERVER_AUTH_PASS', None)
 
     def http_header_meta_image_filename_name(self):
-        return self._config['HTTP_HEADER_META_IMAGE_FILENAME_NAME']
+        return self._config.get('HTTP_HEADER_META_IMAGE_FILENAME_NAME', 'nau-course-certificate-image-filename')
 
     def http_header_meta_image_prefix(self):
-        return self._config['HTTP_HEADER_META_IMAGE_PREFIX']
+        return self._config.get('HTTP_HEADER_META_IMAGE_PREFIX', 'imgkit-')
 
     def http_header_meta_image_format(self):
         return self._config.get('HTTP_HEADER_META_IMAGE_FORMAT', 'imgkit-format')
@@ -256,7 +265,7 @@ class CourseCertificateToPDF(CourseCertificateToBase):
     def get_filename(self):
         filename = self._get_certificate_http_meta(
             self.http_header_meta_filename_name())
-        return filename if filename is not None else self._config['CERTIFICATE_FILE_NAME']
+        return filename if filename is not None else self._config.get('CERTIFICATE_FILE_NAME', 'certificate.pdf')
 
     def s3_suffix(self):
         return ".pdf"

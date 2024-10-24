@@ -1,15 +1,15 @@
 pdfkit==1.0.0
-imgkit==1.2.2
-Flask==2.2.2
-uWSGI==2.0.21
-PyYAML==6.0
-beautifulsoup4==4.11.1
-requests==2.28.1
-boto3==1.26.37
-PyPDF2==1.28.6
-endesive==2.0.13
-pyOpenSSL==22.1.0
-cryptography==38.0.4
-# Flask doesn't specify the dependency correctly, the new version of Werkzeug 
-# isn't compatible with older version of Flask
-Werkzeug==2.2.2
+imgkit==1.2.3
+Flask==3.0.3
+uWSGI==2.0.27
+PyYAML==6.0.2
+beautifulsoup4==4.12.3
+requests==2.32.3
+boto3==1.35.46
+PyPDF2==3.0.1
+endesive==2.17.3
+pyOpenSSL==24.2.1
+cryptography==43.0.3
+Werkzeug==3.0.4
+# To fix "oscrypto.errors.LibraryNotFoundError: Error detecting the version of libcrypto" https://github.com/wbond/oscrypto/issues/78
+git+https://github.com/wbond/oscrypto.git@d5f3437

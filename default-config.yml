@@ -1,0 +1,18 @@
+LOGGING: 
+  version: 1
+  disable_existing_loggers: False
+  root:
+    level: INFO
+    handlers: [console]
+  formatters:
+    standard:
+      datefmt: "%Y-%m-%d %H:%M:%S"
+      format: "%(asctime)s %(levelname)-10s %(message)s"
+    error:
+      format: "%(levelname)s <PID %(process)d:%(processName)s> %(name)s.%(funcName)s(): %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      stream: ext://sys.stdout
+      formatter: standard
