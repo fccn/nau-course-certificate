@@ -5,9 +5,16 @@ from nau.course.certificate.configuration import Configuration
 
 app = Flask(__name__, static_folder='static')
 
-def convert_certificate_to_pdf(content_disposition, path, query_string):
+def read_config():
     configuration = Configuration('config.yml')
     config = configuration.config()
+    if not config:
+        configuration = Configuration('default-config.yml')
+        config = configuration.config()
+    return config
+
+def convert_certificate_to_pdf(content_disposition, path, query_string):
+    config = read_config()
 
     course_certificate_to_pdf = CourseCertificateToPDF(config, path, query_string)
     certificate_file_name = course_certificate_to_pdf.get_filename()
@@ -34,8 +41,7 @@ def static_from_root():
 
 @app.route('/image/<path:path>')
 def image(path):
-    configuration = Configuration('config.yml')
-    config = configuration.config()
+    config = read_config()
 
     course_certificate_to_image = CourseCertificateToImage(config, path, request.query_string)
     certificate_file_name = course_certificate_to_image.get_filename()
