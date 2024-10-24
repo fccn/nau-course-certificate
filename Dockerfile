@@ -63,6 +63,9 @@ RUN pip install \
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# Default amount of uWSGI processes
+ENV UWSGI_WORKERS=2
+
 COPY app.py uwsgi.ini default-config.yml ./
 COPY static static
 COPY nau nau
