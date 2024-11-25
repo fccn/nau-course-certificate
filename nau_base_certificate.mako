@@ -1,4 +1,4 @@
-<%! from django.utils.translation import ugettext as _ %>
+<%! from django.utils.translation import gettext as _ %>
 <%! from django.utils.translation import activate %>
 <%! import distutils %>
 <%! import re %>
