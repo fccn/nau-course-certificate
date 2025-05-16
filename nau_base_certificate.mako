@@ -1,5 +1,6 @@
 <%! from django.utils.translation import gettext as _ %>
 <%! from django.utils.translation import activate %>
+<%! from django.conf import settings %>
 <%! import distutils %>
 <%! import re %>
 <%
@@ -795,6 +796,13 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
     }
 
     @media all {
+      .ednxt-certificate__qrcode {
+        width: 3cm;
+        height: 3cm;
+        position: absolute;
+        left: 5.2cm;
+        bottom: 3.5cm;
+      }
       .ednxt-certificate__side_message {
         color: ${context.get('certificate_side_message_color', context.get('footer_information_color', 'white'))};
       }
@@ -1081,6 +1089,8 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
               </div>
               % endif
 
+              <img class="ednxt-certificate__qrcode" src="https://qrcode.tec-it.com/API/QRCode?color=ffffff&size=small&quietzone=0&errorcorrection=L&istransparent=True&data=${settings.LMS_ROOT_URL}/certificates/${certificate_id_number}" alt="" />              
+
               <div class="ednxt-certificate__footer-information">
                 <div class="ednxt-certificate__footer-information_logo">
                   <h3 class="sr-only">${_("Supported by the following organizations")}</h3>
@@ -1095,7 +1105,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
                 </div>
               </div>
               <div class="ednxt-certificate__footer-link">
-                <a href="https://lms.nau.edu.pt/certificates/${certificate_id_number}">https://lms.nau.edu.pt/certificates/${certificate_id_number}</a>
+                <a href="${settings.LMS_ROOT_URL}/certificates/${certificate_id_number}">${settings.LMS_ROOT_URL}/certificates/${certificate_id_number}</a>
               </div>
               <div class="ednxt-certificate__footer-certification-information">
                 ${footer_note_certification_information}
