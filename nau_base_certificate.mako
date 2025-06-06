@@ -146,6 +146,16 @@ nif_exist_from_portuguese_citizen_card = not ( cc_nif is None or cc_nif == '' )
 
 data_exist_from_portuguese_citizen_card = name_exist_from_portuguese_citizen_card and (nic_exist_from_portuguese_citizen_card or nif_exist_from_portuguese_citizen_card)
 
+citizen_card_message_lang = {
+	'pt-pt': ", com Cartão Cidadão número ",
+	'en': ", with Citizen Card number "
+}
+
+vat_message_lang = {
+	'pt-pt': ", com Número de Identificação Fiscal ",
+	'en': ", with VAT number "
+}
+
 # Build `body_text` variable
 body_text = ''
 body_text = append_space(body_text, context.get('certificate_description', 'Certifica-se que'))
@@ -153,10 +163,10 @@ if data_exist_from_portuguese_citizen_card:
   body_text = append_space(body_text, cc_first_name)
   body_text = append_space(body_text, cc_last_name)
   if nic_exist_from_portuguese_citizen_card:
-    body_text = append_space(body_text, ", com Cartão Cidadão número ")
+    body_text = append_space(body_text, context.get('citizen_card_message', citizen_card_message_lang[language]))
     body_text = append_space(body_text, cc_nic)
   elif nif_exist_from_portuguese_citizen_card:
-    body_text = append_space(body_text, ", com Número de Identificação Fiscal ")
+    body_text = append_space(body_text, context.get('vat_number_message', vat_message_lang[language]))
     body_text = append_space(body_text, cc_nif)
   if cc_nic_check_digit is not None:
     body_text = append_space(body_text, cc_nic_check_digit)
