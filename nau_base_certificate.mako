@@ -195,7 +195,7 @@ if type(footer_note_certification_information) is dict:
 # Generate a dict with all certificate parameters that students can change,
 # so if they change its `name` the print to PDF is forced to be regenerated.
 nau_course_certificate_data_dict = {
-  "template_version": "v_2020_11_19",
+  "template_version": "v_2025_09_29",
   "language": language,
   "certificate_date_issued": certificate_date_issued,
   "body_text": body_text,
@@ -1099,7 +1099,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
               </div>
               % endif
 
-              <img class="ednxt-certificate__qrcode" src="https://qrcode.tec-it.com/API/QRCode?color=ffffff&size=small&quietzone=0&errorcorrection=L&istransparent=True&data=${settings.LMS_ROOT_URL}/certificates/${certificate_id_number}" alt="" />              
+              ## <img class="ednxt-certificate__qrcode" src="https://qrcode.tec-it.com/API/QRCode?color=ffffff&size=small&quietzone=0&errorcorrection=L&istransparent=True&data=${settings.LMS_ROOT_URL}/certificates/${certificate_id_number}" alt="" />
 
               <div class="ednxt-certificate__footer-information">
                 <div class="ednxt-certificate__footer-information_logo">
