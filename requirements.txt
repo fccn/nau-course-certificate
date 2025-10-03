@@ -13,3 +13,4 @@ cryptography==43.0.3
 Werkzeug==3.0.4
 # To fix "oscrypto.errors.LibraryNotFoundError: Error detecting the version of libcrypto" https://github.com/wbond/oscrypto/issues/78
 git+https://github.com/wbond/oscrypto.git@d5f3437
+uwsgitop==0.12
