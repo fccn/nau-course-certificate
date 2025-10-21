@@ -28,7 +28,7 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 #
 # Certificate parameters:
 #
-# document_title: 
+# document_title:
 #   Title of the document. Eg. "CERTIFICADO"
 #
 # certificate_description
@@ -36,11 +36,11 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 #
 # accomplishment_copy_description_full
 #   Third part of the certificate description, after the person name. Eg. ", concluiu o Curso "
-#   
+#
 # accomplishment_copy_course_description
 #   Fifth part of the certificate description, after the course name. Eg. ", com uma duração estimada de X horas."
 #
-# 
+#
 # location
 #   Add a location and date after the certificate main text and before the signatures. Eg. "Lisboa" or "Porto"
 #
@@ -66,10 +66,10 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 # organization_logo_url
 #   Absolute URL to the organization logo. Replace it if you want a different logo for the organization.
 #
-# organization_logo_max_height 
+# organization_logo_max_height
 # organization_logo_max_width
 #   Change organization logo max height/width, so streched logos could be increased.
-#   
+#
 # organization_long_name
 #   Name of the organization, defaults to course organization name. Used has image organization logo alt name.
 #
@@ -95,7 +95,7 @@ course_certificate_host = "//" + request.get_host().replace('lms','course-certif
 #
 # certificate_side_message
 #    HTML content to be used on left side of the certificate, bellow the course image.
-# 
+#
 # certificate_side_message_color
 #    Color of certificate side message, to be used if the background of certificate has different colors.
 #
@@ -114,7 +114,7 @@ def uppercase(in_str):
   return in_str.upper()
 
 # Utility function to clean tags on text
-CLEANR = re.compile('<.*?>') 
+CLEANR = re.compile('<.*?>')
 def cleanhtml(raw_html):
   cleantext = re.sub(CLEANR, '', raw_html)
   return cleantext
@@ -185,8 +185,8 @@ supplement = context.get('supplement', None)
 
 # footer note certification information message
 footer_note_certification_information_default = {
-  "pt-pt": "A pessoa mencionada neste certificado completou todas as atividades relativas ao curso em questão. Para mais informações sobre Certificação na plataforma NAU e requisitos para a sua obtenção visite <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. Este certificado é uma prova de aprendizagem, não tendo qualquer validade formal como prova de qualificação ou como formação conferente de grau.",
-  "en": "The person mentioned in this certificate has completed all course activities. For more information about Certification at NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/sobre/politica-de-certificacao'>nau.edu.pt/sobre/politica-de-certificacao</a>. This certificate is an evidence of learning, and has no formal proof of qualification or as a degree that gives a level of education.",
+  "pt-pt": "Este certificado é uma prova de aprendizagem e término do curso. Para mais informações sobre a politica de certificação da NAU, visite <a href='https://www.nau.edu.pt/pt/legal/politica-de-certificacao/' target='_blank'>a página sobre Política de Certificação</a>.",
+  "en": "This certificate is an evidence of learning and course completion. For more information about Certification at NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/pt/legal/politica-de-certificacao'>the Certification policy page</a>. ",
 }
 footer_note_certification_information = context.get('footer_note_certification_information', footer_note_certification_information_default)
 if type(footer_note_certification_information) is dict:
@@ -241,7 +241,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
 %>
 
 <%
-# Show a message to associate portuguese citizen card if on the advanced settings > Certificate Web/HTML View Overrides 
+# Show a message to associate portuguese citizen card if on the advanced settings > Certificate Web/HTML View Overrides
 # the field 'certificate_require_portuguese_citizen_card' has the 'true' value.
 %>
 % if certificate_require_portuguese_citizen_card and ( not data_exist_from_portuguese_citizen_card ):
@@ -260,7 +260,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
     </p>
     <p>
       <a href="https://plataforma-nau.atlassian.net/wiki/spaces/PROD/pages/2042986497/Associar+Cart+o+de+Cidad+o+e+Chave+M+vel+Digital" target="_blank">
-        Ajuda para 
+        Ajuda para
         "Associar o Cartão de Cidadão e a Chave Móvel Digital"
         à sua conta NAU.
       </a>
@@ -304,7 +304,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
   ## To fix the PDF printing weren't being printed too small.
   ## <meta name="pdfkit-zoom" content="2" />
   <meta name="pdfkit-disable-smart-shrinking" content="" />
-  
+
   ## Additional wkhtmltopdf properties that are wrapped by python pdfkit library can be passed to by prefixing them with "pdfkit-" and write them has a new HTTP meta.
   ## The completed list is https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
 
@@ -323,7 +323,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
 
   <title>${document_title}</title>
   <%static:css group='style-certificates'/>
-  
+
   <style>
     /* eduNEXT certificate template asset certificates_styles.css */
     * {
@@ -1015,15 +1015,15 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
       % endif
 
       % if nau_certificate_issued_display_iframe and request.GET.get('preview') is None and request.META.get('HTTP_X_NAU_CERTIFICATE_FORCE_HTML') is None:
-        <iframe id="certificateToPdfIframe" src="${course_certificate_host}/inline${course_certificate_app_path}" 
+        <iframe id="certificateToPdfIframe" src="${course_certificate_host}/inline${course_certificate_app_path}"
           style="width: 1px; min-width: 100%; min-height: 100%; height: 870px;">
         </iframe>
       % else:
         <div class="ednxt-container">
           <div class="ednxt-certificate">
-            
+
             <div class="ednxt-certificate__header">
-              <div class="ednxt-certificate__header-logo" style="width: 100%;">                
+              <div class="ednxt-certificate__header-logo" style="width: 100%;">
               </div>
             </div>
             <h1 class="ednxt-certificate__header-title">${document_title}</h1>
@@ -1086,7 +1086,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
               % if to_bool(context.get('add_organization_logo_to_header', 'true')) and organization_logo_url:
                 <img class="organization-logo" src="${organization_logo_url}" alt="${organization_long_name}">
               % endif
-              
+
               % if context.get('footer_additional_logo'):
                 <img class="footer-additional-logo" src="${footer_additional_logo}">
               % endif
