@@ -600,7 +600,7 @@ nau_course_certificate_version = hashlib.sha1(json.dumps(nau_course_certificate_
         max-width: 100%;
         max-height: 6.25rem;
         margin: 0 auto;
-        padding: 1.25rem .625rem
+        padding: .25rem .5rem;
     }
 
     .ednxt-certificate__footer-signatory_name {
