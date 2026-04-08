@@ -185,8 +185,8 @@ supplement = context.get('supplement', None)
 
 # footer note certification information message
 footer_note_certification_information_default = {
-  "pt-pt": "Este certificado é uma prova de aprendizagem e término do curso. Para mais informações sobre a politica de certificação da NAU, visite <a href='https://www.nau.edu.pt/pt/legal/politica-de-certificacao/' target='_blank'>a página sobre Política de Certificação</a>.",
-  "en": "This certificate is an evidence of learning and course completion. For more information about Certification at NAU platform and requirements for obtaining it, please visit <a target='_blank' href='//nau.edu.pt/pt/legal/politica-de-certificacao'>the Certification policy page</a>. ",
+  "pt-pt": "Este certificado é uma prova de aprendizagem e término do curso. Para mais informações visite <a href='https://www.nau.edu.pt/pt/legal/politica-de-certificacao/' target='_blank'>a página sobre Política de Certificação da NAU</a>.",
+  "en": "This certificate is an evidence of learning and course completion. For more information, please visit <a target='_blank' href='//nau.edu.pt/pt/legal/politica-de-certificacao'>the NAU Certification Policy page</a>. ",
 }
 footer_note_certification_information = context.get('footer_note_certification_information', footer_note_certification_information_default)
 if type(footer_note_certification_information) is dict:
