@@ -16,6 +16,14 @@ source venv/bin/activate
 python -m pip install -r requirements.txt --upgrade
 ```
 
+Certificates are rendered to PDF/PNG using [Playwright](https://playwright.dev/python/)
+with a bundled Chromium browser. After installing the requirements, download
+the browser binary and its OS dependencies once:
+
+```bash
+playwright install --with-deps chromium
+```
+
 ## Development server
 
 Run development server as:
@@ -34,6 +42,15 @@ Using docker:
 
 ```bash
 docker-compose build && docker-compose up
+```
+
+## Tests
+
+Install test dependencies (this also installs `requirements.txt`) and run the test suite with pytest:
+
+```bash
+python -m pip install -r requirements-test.txt --upgrade
+python -m pytest tests/ -v
 ```
 
 ## Local development
