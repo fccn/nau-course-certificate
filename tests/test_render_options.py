@@ -44,6 +44,12 @@ class TestBuildPdfOptions:
         options = build_pdf_options({"orientation": "Portrait"})
         assert options["landscape"] is False
 
+    def test_orientation_is_coerced_to_string_before_comparing(self):
+        # Defensive: some callers may pass non-string values through; this
+        # must not raise, and non-"landscape" values should map to False.
+        options = build_pdf_options({"orientation": 123})
+        assert options["landscape"] is False
+
     def test_maps_margins(self):
         options = build_pdf_options({
             "margin-top": "0mm",
@@ -142,6 +148,12 @@ class TestBuildScreenshotOptions:
 
     def test_normalizes_jpg_alias_to_jpeg(self):
         options = build_screenshot_options({"format": "jpg"}, natural_width=1123.0, natural_height=794.0)
+        assert options["type"] == "jpeg"
+
+    def test_format_is_coerced_to_string_before_comparing(self):
+        # Defensive: some callers may pass non-string values through; this
+        # must not raise, and unrecognized values should fall back to jpeg.
+        options = build_screenshot_options({"format": 123}, natural_width=1123.0, natural_height=794.0)
         assert options["type"] == "jpeg"
 
     def test_maps_quality_for_jpeg(self):

@@ -55,7 +55,7 @@ def build_pdf_options(options: dict) -> dict:
 
     orientation = options.get("orientation")
     if orientation:
-        pdf_kwargs["landscape"] = orientation.strip().lower() == "landscape"
+        pdf_kwargs["landscape"] = str(orientation).strip().lower() == "landscape"
 
     margin = {}
     for side in ("top", "bottom", "left", "right"):
@@ -131,7 +131,7 @@ def build_screenshot_options(options: dict, natural_width: float, natural_height
     """
     image_format = options.get("format", "jpeg")
     screenshot_kwargs = {
-        "type": _IMAGE_FORMAT_ALIASES.get(image_format.strip().lower(), "jpeg"),
+        "type": _IMAGE_FORMAT_ALIASES.get(str(image_format).strip().lower(), "jpeg"),
     }
 
     if screenshot_kwargs["type"] == "jpeg" and "quality" in options:

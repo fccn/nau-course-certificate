@@ -67,6 +67,20 @@ def _measure_natural_size(page) -> tuple:
     overflow it; the resulting ``scrollWidth``/``scrollHeight`` on the root
     element then reveals the content's true natural size, regardless of the
     probe viewport's own size.
+
+    Constraint / assumption: this technique only works because every current
+    certificate template has a fixed-size, non-responsive design (a
+    print-oriented layout with no responsive CSS breakpoints, e.g. no
+    percentage-based widths or media queries that change layout based on
+    viewport size) -- so its ``scrollWidth``/``scrollHeight`` is the same
+    regardless of which viewport it's measured from, including the small
+    :data:`_PROBE_VIEWPORT` used here. If a future certificate template
+    became responsive (e.g. its content reflowed/resized based on viewport
+    width), this function would instead report the *probe viewport's* size
+    (or some responsive layout computed from it) rather than the template's
+    true intended size, silently breaking the image dimensions. Any such
+    template would need a different sizing strategy (e.g. an explicit
+    width/height meta tag consulted here instead of measuring the DOM).
     """
     size = page.evaluate(
         "() => ({width: document.documentElement.scrollWidth,"
@@ -107,7 +121,19 @@ def _render_on_browser_thread(url, headers, render_fn, viewport, device_scale_fa
     context = browser.new_context(**context_kwargs)
     try:
         page = context.new_page()
-        page.goto(url, wait_until="networkidle", timeout=_NAVIGATION_TIMEOUT_MS)
+        # "load" (rather than "networkidle") is intentional: the real
+        # certificate template's page-load, background/logo images, fonts
+        # and stylesheets are all requested directly from the initial HTML
+        # (verified by inspecting every request the page makes), with no
+        # further script-driven/lazy-loaded network activity afterwards, so
+        # waiting for the "load" event alone is already sufficient for a
+        # complete, correctly-styled render. "networkidle" (which additionally
+        # waits for ≤2 in-flight connections for 500ms) was measured to be
+        # about 2x slower against the real template for no rendering benefit,
+        # and would be unnecessarily fragile against any future long-lived
+        # connection (e.g. analytics beacons, websockets) on the page,
+        # risking hitting `_NAVIGATION_TIMEOUT_MS` for no reason.
+        page.goto(url, wait_until="load", timeout=_NAVIGATION_TIMEOUT_MS)
         page.emulate_media(media="print")
         return render_fn(page)
     finally:

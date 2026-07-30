@@ -33,6 +33,7 @@ connection for the lifetime of the process.
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from typing import Optional
 
 from playwright.sync_api import sync_playwright, Browser, Playwright
 
@@ -40,15 +41,25 @@ logger = logging.getLogger(__name__)
 
 # Process-local state. Each uWSGI worker process gets its own copy of these
 # module-level globals after fork, so this is safe without cross-process locking.
-_playwright: Playwright = None
-_browser: Browser = None
+_playwright: Optional[Playwright] = None
+_browser: Optional[Browser] = None
 _lock = threading.Lock()
 
 # Single-worker executor: the dedicated OS thread that owns the Playwright
 # connection/browser for this process. All Playwright calls MUST go through
 # ``run_in_browser_thread`` so they always run on this same thread, no matter
 # which thread the WSGI server used to handle the incoming request.
-_executor: ThreadPoolExecutor = None
+#
+# Trade-off: since only one browser-thread call runs at a time, requests
+# handled on different WSGI threads within the same worker process will
+# serialize/queue behind each other while rendering. This isn't a regression
+# for the current deployment (uwsgi.ini only scales via multiple `workers`/
+# processes, not `threads > 1`, and the previous wkhtmltopdf-based code wasn't
+# safely usable from multiple threads either -- see this module's docstring).
+# It would only become a real bottleneck if `threads > 1` were ever
+# configured, in which case per-worker rendering concurrency would need a
+# dedicated pool of browsers/threads instead of a single one.
+_executor: Optional[ThreadPoolExecutor] = None
 _executor_lock = threading.Lock()
 
 
