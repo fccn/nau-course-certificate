@@ -1,2 +1,6 @@
 -r requirements.txt
 pytest==8.3.3
+# Used to decode/inspect images in test_certificate_renderer.py assertions. Pulled in
+# transitively today (endesive -> Pillow), but pinned explicitly here so test infra
+# doesn't silently break if that transitive dependency ever changes.
+Pillow==12.3.0

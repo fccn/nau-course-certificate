@@ -12,9 +12,16 @@ They require a Chromium browser to be installed for Playwright (`python -m
 playwright install chromium`), same as the "docker" CI job already does; the
 "test" CI job installs it too (see .github/workflows/ci.yml).
 
-Image assertions decode actual pixel dimensions via Pillow, which is always
-available transitively (endesive, a direct dependency, requires it), rather
-than adding a new direct test dependency.
+Two fixtures are used:
+- sample_certificate.html: minimal box+banner fixture for precise,
+  easy-to-reason-about pixel-dimension assertions.
+- mock_certificate.html: a closer structural approximation of the real NAU
+  certificate template (fixed-size A4-landscape box, absolutely-positioned
+  logo/course images, real print-media hiding rules copied from the real
+  template) -- see that file's own docstring for details.
+
+Image assertions decode actual pixel dimensions via Pillow (pinned explicitly
+in requirements-test.txt).
 """
 import io
 import pathlib
@@ -34,6 +41,17 @@ _FIXTURE_URL = pathlib.Path(__file__).parent.joinpath(
 # another 50px of height if it were not hidden. See sample_certificate.html.
 _FIXTURE_WIDTH = 800
 _FIXTURE_HEIGHT = 400
+
+_NAU_FIXTURE_URL = pathlib.Path(__file__).parent.joinpath(
+    "fixtures", "mock_certificate.html"
+).as_uri()
+
+# The NAU-like fixture's ".ednxt-certificate" box is a fixed A4-landscape
+# design (29.7cm x 21cm), same as the real certificate template; at 96 CSS
+# px/inch that's 1122.5x793.7 CSS pixels, which Chromium rounds to the pixel
+# counts below. See mock_certificate.html.
+_NAU_FIXTURE_WIDTH = 1123
+_NAU_FIXTURE_HEIGHT = 794
 
 
 @pytest.fixture(autouse=True)
@@ -94,3 +112,28 @@ class TestRenderImage:
 
         image = Image.open(io.BytesIO(image_bytes))
         assert image.size == (300, 150)
+
+
+class TestRenderPdfWithNauLikeFixture:
+    def test_produces_a_valid_pdf(self):
+        pdf_bytes = render_pdf(_NAU_FIXTURE_URL, {})
+
+        assert pdf_bytes.startswith(b"%PDF-")
+        assert len(pdf_bytes) > 1000
+
+
+class TestRenderImageWithNauLikeFixture:
+    def test_measures_the_fixed_a4_landscape_natural_size_and_hides_print_only_chrome(self):
+        # mock_certificate.html exercises a layout much closer to the real
+        # NAU template than sample_certificate.html's single box+banner: an
+        # absolutely-positioned A4-landscape design with several images, plus
+        # the same ".sr-only"/".wrapper-about" print-hiding rules the real
+        # template uses. If natural-size measurement or print-media hiding
+        # broke for this more realistic layout, the output would not match
+        # the fixed A4-landscape size (e.g. because hidden screen-only
+        # elements added extra height, or absolutely-positioned content
+        # wasn't accounted for).
+        image_bytes = render_image(_NAU_FIXTURE_URL, {})
+
+        image = Image.open(io.BytesIO(image_bytes))
+        assert image.size == (_NAU_FIXTURE_WIDTH, _NAU_FIXTURE_HEIGHT)
