@@ -4,11 +4,10 @@ from abc import ABC, abstractmethod
 from builtins import dict, str
 
 import boto3
-import imgkit
-import pdfkit
 import requests
 from botocore.exceptions import ClientError
 from bs4 import BeautifulSoup
+from nau.course.certificate.certificate_renderer import render_image, render_pdf
 from nau.course.certificate.configuration import Configuration
 from nau.course.certificate.cut_pdf import cut_pdf_limit_pages
 from requests.auth import HTTPBasicAuth
@@ -273,7 +272,7 @@ class CourseCertificateToPDF(CourseCertificateToBase):
     def generate_new_certificate_to_dest_format(self):
         options = self.generate_options(self.http_header_meta_prefix())
 
-        pdf = pdfkit.from_url(self._url, False, options=options)
+        pdf = render_pdf(self._url, options)
 
         limit_pages = self._get_certificate_http_meta(
             self.http_header_meta_limit_number_pages())
@@ -308,4 +307,4 @@ class CourseCertificateToImage(CourseCertificateToBase):
 
     def generate_new_certificate_to_dest_format(self):
         options = self.generate_options(self.http_header_meta_image_prefix())
-        return imgkit.from_url(self._url, False, options=options)
+        return render_image(self._url, options)
