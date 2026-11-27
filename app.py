@@ -1,6 +1,7 @@
-from flask import Flask, request, send_from_directory
+from flask import Flask, abort, request, send_from_directory
 from flask import make_response
-from nau.course.certificate.course_certificate_to_pdf import CourseCertificateToPDF, CourseCertificateToImage
+from nau.course.certificate.course_certificate_to_pdf import CourseCertificateToPDF, CourseCertificateToImage, get_lms_server_url
+from nau.course.certificate.qrcode_generator import generate_certificate_qrcode_svg
 from nau.course.certificate.configuration import Configuration
 
 app = Flask(__name__, static_folder='static')
@@ -50,6 +51,22 @@ def image(path):
     response = make_response(binary_result)
     response.headers['Content-Type'] = 'image/' + course_certificate_to_image.image_format()
     response.headers['Content-Disposition'] = '{}; filename={}'.format('inline', certificate_file_name)
+    return response
+
+@app.route('/qrcode/<path:path>')
+def qrcode(path):
+    '''
+    QR code (SVG) with a link to the public LMS page of the certificate, e.g. `/qrcode/certificates/<id>`.
+    The optional `color` query parameter is a hex color, like `ffffff`, and the background is transparent.
+    '''
+    try:
+        svg = generate_certificate_qrcode_svg(get_lms_server_url(read_config()), path, request.args.get('color'))
+    except ValueError:
+        abort(404)
+
+    response = make_response(svg)
+    response.headers['Content-Type'] = 'image/svg+xml'
+    response.headers['Cache-Control'] = 'public, max-age=86400'
     return response
 
 # startup the Flask web server

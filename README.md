@@ -105,6 +105,20 @@ View on local development server http://localhost:5000/inline/certificates/0f371
 View on STAGE https://lms.stage.nau.fccn.pt/certificates/0f371aa73c8246d19bb784e819d5f806
 
 
+## QR code
+
+The certificate template shows a QR code that links to the certificate page on the LMS. It's served by this app,
+so there's no dependency on third-party QR code services (see https://github.com/fccn/nau-technical/issues/884):
+
+```
+GET /qrcode/certificates/<certificate id>[?color=ffffff]
+```
+
+- It returns an SVG with a transparent background, the optional `color` is a hex color (`rgb` or `rrggbb`, without `#`), black by default.
+- Only `certificates/<32 hex chars>` paths are accepted (otherwise `404`) and the encoded link is built from the configured LMS URL (`LMS_SERVER_URL` or `OPENEDX_LMS_URL`), so it can't be used as a generic QR code generator.
+- While rendering a certificate to PDF/PNG, the requests for this route made by the page are answered by the renderer itself, without
+  going through uWSGI. Otherwise each render would need a second free uWSGI worker and could deadlock when all workers are busy rendering.
+
 ## Digital signature
 To digital sign PDFs of course certificates it is need to have a certificate (public and key) to be used during the digital signature process.
 For development proposes there is a digital signature that already is been created on folder `./digital_signature_dev`. With the following procedure:

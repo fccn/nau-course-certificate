@@ -137,3 +137,55 @@ class TestRenderImageWithNauLikeFixture:
 
         image = Image.open(io.BytesIO(image_bytes))
         assert image.size == (_NAU_FIXTURE_WIDTH, _NAU_FIXTURE_HEIGHT)
+
+
+_QRCODE_CERTIFICATE_PATH = "certificates/4d1d8ad2bcea43b7bac918ca328183b9"
+
+
+def _qrcode_page_url(tmp_path, query: str = "") -> str:
+    # The QR code host is unreachable on purpose: the image only loads when
+    # its request is answered in-process by the renderer.
+    page = tmp_path / "qrcode_certificate.html"
+    page.write_text(
+        '<html><body style="margin:0"><img width="200" height="200" '
+        'src="https://course-certificate.invalid/qrcode/{}{}"></body></html>'.format(
+            _QRCODE_CERTIFICATE_PATH, query
+        )
+    )
+    return page.as_uri()
+
+
+def _count_red_pixels(image_bytes: bytes) -> int:
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    colors = image.getcolors(maxcolors=image.width * image.height)
+    return sum(count for count, (r, g, b) in colors if r > 200 and g < 50 and b < 50)
+
+
+class TestQrcodeServedInProcess:
+    def test_image_render_draws_the_qrcode_without_network_access(self, tmp_path):
+        image_bytes = render_image(
+            _qrcode_page_url(tmp_path, "?color=ff0000"), {"format": "png"}, qrcode_lms_url="https://lms.example.test"
+        )
+
+        assert _count_red_pixels(image_bytes) > 1000
+
+    def test_pdf_render_succeeds_with_the_qrcode(self, tmp_path):
+        pdf_bytes = render_pdf(_qrcode_page_url(tmp_path), {}, qrcode_lms_url="https://lms.example.test")
+
+        assert pdf_bytes.startswith(b"%PDF-")
+
+    def test_qrcode_is_not_intercepted_without_the_lms_url(self, tmp_path):
+        image_bytes = render_image(_qrcode_page_url(tmp_path, "?color=ff0000"), {"format": "png"})
+
+        assert _count_red_pixels(image_bytes) == 0
+
+    def test_invalid_qrcode_requests_are_not_served(self, tmp_path):
+        page = tmp_path / "invalid.html"
+        page.write_text(
+            '<html><body style="margin:0"><img width="200" height="200" '
+            'src="https://course-certificate.invalid/qrcode/certificates/not-an-id?color=ff0000"></body></html>'
+        )
+
+        image_bytes = render_image(page.as_uri(), {"format": "png"}, qrcode_lms_url="https://lms.example.test")
+
+        assert _count_red_pixels(image_bytes) == 0

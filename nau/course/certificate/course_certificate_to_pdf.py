@@ -19,6 +19,16 @@ from urllib.parse import parse_qs
 logger = logging.getLogger(__name__)
 
 
+def get_lms_server_url(config) -> str:
+    '''
+    Get the Open edX LMS URL from the configuration or the environment.
+    '''
+    lms_server_url = config.get('LMS_SERVER_URL', config.get('OPENEDX_LMS_URL', os.getenv('OPENEDX_LMS_URL')))
+    if not lms_server_url:
+        raise Exception("Bad configuration, configure `LMS_SERVER_URL` or `OPENEDX_LMS_URL` on the config.yml or alternatively `OPENEDX_LMS_URL` environment variable.")
+    return lms_server_url
+
+
 class CourseCertificateToBase(ABC):
     '''
     Converts an URL certificate to a PDF. If the URL contains a certificate id then save it to a S3 Bucket.
@@ -28,6 +38,7 @@ class CourseCertificateToBase(ABC):
     _config = None
     _path : str = None
     _url = None
+    _lms_server_url = None
     _certificate_id = None
     _certificate_metas = None
 
@@ -47,9 +58,8 @@ class CourseCertificateToBase(ABC):
         self._language = language_query_values[0] if language_query_values else None
 
         # https://lms.dev.nau.fccn.pt
-        lms_server_url = self._config.get('LMS_SERVER_URL', self._config.get('OPENEDX_LMS_URL', os.getenv('OPENEDX_LMS_URL')))
-        if not lms_server_url:
-            raise Exception("Bad configuration, configure `LMS_SERVER_URL` or `OPENEDX_LMS_URL` on the config.yml or alternatively `OPENEDX_LMS_URL` environment variable.")
+        lms_server_url = get_lms_server_url(self._config)
+        self._lms_server_url = lms_server_url
         self._url = lms_server_url + '/' + path
         if query_string and len(query_string) > 0:
             self._url += "?" + query_string.decode('ascii')
@@ -272,7 +282,7 @@ class CourseCertificateToPDF(CourseCertificateToBase):
     def generate_new_certificate_to_dest_format(self):
         options = self.generate_options(self.http_header_meta_prefix())
 
-        pdf = render_pdf(self._url, options)
+        pdf = render_pdf(self._url, options, qrcode_lms_url=self._lms_server_url)
 
         limit_pages = self._get_certificate_http_meta(
             self.http_header_meta_limit_number_pages())
@@ -307,4 +317,4 @@ class CourseCertificateToImage(CourseCertificateToBase):
 
     def generate_new_certificate_to_dest_format(self):
         options = self.generate_options(self.http_header_meta_image_prefix())
-        return render_image(self._url, options)
+        return render_image(self._url, options, qrcode_lms_url=self._lms_server_url)
