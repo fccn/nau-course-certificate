@@ -178,6 +178,16 @@ class TestConvertS3Caching:
         mock_render.assert_called_once()
         mock_save.assert_called_once()
 
+    def test_renders_with_the_lms_url_to_serve_the_qrcode(self):
+        cert = _make_certificate_to_pdf(config=dict(_BASE_CONFIG))
+
+        with patch(
+            "nau.course.certificate.course_certificate_to_pdf.render_pdf", return_value=b"rendered-pdf-bytes"
+        ) as mock_render:
+            cert.convert()
+
+        assert mock_render.call_args.kwargs["qrcode_lms_url"] == "http://lms.example.test"
+
     def test_no_caching_attempted_when_bucket_is_not_configured(self):
         cert = _make_certificate_to_pdf(config=dict(_BASE_CONFIG))
 

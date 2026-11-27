@@ -99,6 +99,39 @@ class TestImageRoute:
         assert response.headers["Content-Disposition"] == "inline; filename=my-certificate.png"
 
 
+class TestQrcodeRoute:
+
+    _CERTIFICATE_PATH = "certificates/4d1d8ad2bcea43b7bac918ca328183b9"
+
+    def test_returns_a_cacheable_svg_with_the_certificate_link(self, client):
+        from nau.course.certificate.qrcode_generator import generate_qrcode_svg
+
+        with patch.object(app_module, "read_config", return_value={"LMS_SERVER_URL": "https://lms.example.test"}):
+            response = client.get("/qrcode/" + self._CERTIFICATE_PATH)
+
+        assert response.status_code == 200
+        assert response.headers["Content-Type"] == "image/svg+xml"
+        assert response.headers["Cache-Control"] == "public, max-age=86400"
+        assert response.data == generate_qrcode_svg("https://lms.example.test/" + self._CERTIFICATE_PATH)
+
+    def test_uses_the_color_query_parameter(self, client):
+        with patch.object(app_module, "read_config", return_value={"LMS_SERVER_URL": "https://lms.example.test"}):
+            response = client.get("/qrcode/" + self._CERTIFICATE_PATH + "?color=ffffff")
+
+        assert response.status_code == 200
+        assert b'fill="#ffffff"' in response.data
+
+    @pytest.mark.parametrize(
+        "path",
+        ["/qrcode/certificates/not-an-id", "/qrcode/admin/login", "/qrcode/" + _CERTIFICATE_PATH + "?color=red"],
+    )
+    def test_returns_404_for_anything_but_a_certificate_path_and_valid_color(self, client, path):
+        with patch.object(app_module, "read_config", return_value={"LMS_SERVER_URL": "https://lms.example.test"}):
+            response = client.get(path)
+
+        assert response.status_code == 404
+
+
 class TestReadConfig:
 
     def test_returns_the_config_yml_contents_when_present_and_non_empty(self):

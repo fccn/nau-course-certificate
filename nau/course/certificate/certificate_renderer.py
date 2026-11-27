@@ -14,8 +14,14 @@ The actual translation of those options into Playwright kwargs is done in
 :mod:`nau.course.certificate.render_options`.
 """
 import logging
+import re
+from urllib.parse import parse_qs, urlparse
 
 from nau.course.certificate.browser_manager import get_browser, run_in_browser_thread
+from nau.course.certificate.qrcode_generator import (
+    QRCODE_ROUTE_PREFIX,
+    generate_certificate_qrcode_svg,
+)
 from nau.course.certificate.render_options import (
     build_pdf_options,
     build_screenshot_options,
@@ -36,6 +42,28 @@ _NAVIGATION_TIMEOUT_MS = 60000
 # actual required size (via ``Page.set_viewport_size()``) before the
 # screenshot is taken.
 _PROBE_VIEWPORT = {"width": 200, "height": 100}
+
+
+def _fulfill_qrcode_request(route, lms_url: str):
+    """
+    Answer a request for the certificate's QR code image directly from this
+    process, instead of through the network.
+
+    The certificate template points the QR code ``<img>`` to this very
+    application (``/qrcode/<certificate path>``). Serving it over HTTP while a
+    worker is rendering would need a second free worker, and could deadlock
+    when every worker is busy rendering certificates.
+    """
+    parsed = urlparse(route.request.url)
+    color = parse_qs(parsed.query).get("color", [None])[0]
+    try:
+        svg = generate_certificate_qrcode_svg(
+            lms_url, parsed.path[len(QRCODE_ROUTE_PREFIX):], color
+        )
+    except ValueError:
+        route.fulfill(status=400, content_type="text/plain", body="Invalid QR code request")
+        return
+    route.fulfill(status=200, content_type="image/svg+xml", body=svg)
 
 
 def _extract_custom_headers(options: dict) -> dict:
@@ -89,7 +117,7 @@ def _measure_natural_size(page) -> tuple:
     return float(size["width"]), float(size["height"])
 
 
-def _render(url: str, headers: dict, render_fn, viewport=None, device_scale_factor=None):
+def _render(url: str, headers: dict, render_fn, viewport=None, device_scale_factor=None, qrcode_lms_url=None):
     """
     Open a new isolated browser context/page navigated to ``url`` with the
     given extra HTTP ``headers``, call ``render_fn(page)`` to produce the
@@ -107,11 +135,11 @@ def _render(url: str, headers: dict, render_fn, viewport=None, device_scale_fact
     objects can only be used from the OS thread that created them.
     """
     return run_in_browser_thread(
-        _render_on_browser_thread, url, headers, render_fn, viewport, device_scale_factor
+        _render_on_browser_thread, url, headers, render_fn, viewport, device_scale_factor, qrcode_lms_url
     )
 
 
-def _render_on_browser_thread(url, headers, render_fn, viewport, device_scale_factor):
+def _render_on_browser_thread(url, headers, render_fn, viewport, device_scale_factor, qrcode_lms_url=None):
     browser = get_browser()
     context_kwargs = {"extra_http_headers": headers}
     if viewport is not None:
@@ -120,6 +148,11 @@ def _render_on_browser_thread(url, headers, render_fn, viewport, device_scale_fa
         context_kwargs["device_scale_factor"] = device_scale_factor
     context = browser.new_context(**context_kwargs)
     try:
+        if qrcode_lms_url:
+            context.route(
+                re.compile(r"^https?://[^/?#]+" + re.escape(QRCODE_ROUTE_PREFIX) + r"certificates/[^/?#]+(\?.*)?$"),
+                lambda route: _fulfill_qrcode_request(route, qrcode_lms_url),
+            )
         page = context.new_page()
         # "load" (rather than "networkidle") is intentional: the real
         # certificate template's page-load, background/logo images, fonts
@@ -140,7 +173,7 @@ def _render_on_browser_thread(url, headers, render_fn, viewport, device_scale_fa
         context.close()
 
 
-def render_pdf(url: str, options: dict) -> bytes:
+def render_pdf(url: str, options: dict, qrcode_lms_url: str = None) -> bytes:
     """
     Render the given URL to a PDF byte array.
 
@@ -148,6 +181,9 @@ def render_pdf(url: str, options: dict) -> bytes:
         url (str): The certificate page URL to render.
         options (dict): Merged ``custom-header`` + ``pdfkit-*`` options, as
             produced by ``CourseCertificateToBase.generate_options()``.
+        qrcode_lms_url (str): Public LMS URL. When given, requests for the
+            certificate QR code (``/qrcode/certificates/<id>``) made by the
+            page are served in-process, encoding a link to that LMS.
 
     Returns:
         bytes: The rendered PDF file content.
@@ -156,10 +192,12 @@ def render_pdf(url: str, options: dict) -> bytes:
     headers = _extract_custom_headers(options)
     pdf_options = build_pdf_options(options)
 
-    return _render(url, headers, lambda page: page.pdf(**pdf_options))
+    return _render(
+        url, headers, lambda page: page.pdf(**pdf_options), qrcode_lms_url=qrcode_lms_url
+    )
 
 
-def render_image(url: str, options: dict) -> bytes:
+def render_image(url: str, options: dict, qrcode_lms_url: str = None) -> bytes:
     """
     Render the given URL to an image byte array (PNG or JPEG).
 
@@ -167,6 +205,7 @@ def render_image(url: str, options: dict) -> bytes:
         url (str): The certificate page URL to render.
         options (dict): Merged ``custom-header`` + ``imgkit-*`` options, as
             produced by ``CourseCertificateToBase.generate_options()``.
+        qrcode_lms_url (str): Same as in :func:`render_pdf`.
 
     Returns:
         bytes: The rendered image file content.
@@ -199,4 +238,5 @@ def render_image(url: str, options: dict) -> bytes:
         _do_render,
         viewport=_PROBE_VIEWPORT,
         device_scale_factor=zoom_factor if zoom_factor and zoom_factor != 1.0 else None,
+        qrcode_lms_url=qrcode_lms_url,
     )
